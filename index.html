@@ -29,6 +29,7 @@ html{font-size:62.5%}
   --body:"Roboto",-apple-system,"Segoe UI",Arial,sans-serif;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:#EFE9DD;font-family:var(--body);color:var(--navy);
   font-size:1.4rem;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
@@ -412,6 +413,49 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
   .slot{width:56px;height:84px}
   .slot img{width:56px;height:84px}
 }
+
+/* ═══ УВЕЛИЧЕНИЕ КАРТЫ ═══
+   По карте кликают, чтобы прочитать её — и только потом играют.
+   Так ситуацию читают вслух, а не проскакивают мимо. */
+.zoom{position:fixed;inset:0;z-index:120;display:none;background:rgba(21,33,52,.93);
+  place-items:center;padding:8px}
+.zoom[open]{display:grid}
+.zbox{display:flex;flex-direction:column;align-items:center;gap:10px;max-height:100%}
+/* карта занимает всю доступную высоту, кнопки — под ней, ничего не закрывая */
+.zbox img{display:block;height:min(calc(100vh - 116px),1100px);width:auto;max-width:96vw;
+  border-radius:14px;box-shadow:0 30px 70px -20px rgba(0,0,0,.9);background:var(--card)}
+.zbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.zname{font-family:var(--disp);font-size:1.4rem;letter-spacing:2px;color:var(--gold)}
+.zbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.zhint{position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  font-size:1.15rem;color:rgba(255,255,255,.5);background:rgba(21,33,52,.5);
+  padding:3px 12px;border-radius:12px;line-height:1.4}
+@media (max-width:760px){
+  .zoom{padding:6px}
+  .zbox img{height:auto;width:96vw;max-height:calc(100vh - 104px)}
+  .zname{display:none}
+  .zbar{width:100%}
+  .zbtns{width:100%}
+  .zbtns .btn1,.zbtns .btn2{flex:1;padding:14px 8px;font-size:1.5rem;
+    display:flex;align-items:center;justify-content:center;text-align:center}
+  .zhint{display:none}
+}
+
+/* ═══ ОТВЕТ СЛОВАМИ ═══
+   Игроку нечем крыть, но он рассказывает, как решает такую ситуацию.
+   Засчитать или нет — решает ведущий. */
+.wordask{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;
+  padding:9px 12px;border-radius:10px;background:rgba(190,174,148,.28);
+  border:1px solid var(--gold);font-size:1.35rem;color:var(--ink)}
+.wordask b{color:var(--bronze);font-family:var(--disp);letter-spacing:.6px}
+.wbtns{display:flex;gap:7px;margin-left:auto}
+.wbtns{display:none}
+.host-on .wbtns{display:flex}
+.pair.word .atk{outline:3px solid var(--bronze);outline-offset:-1px}
+.pair.word::after{content:"СВОЙ ПРИМЕР";position:absolute;bottom:-7px;left:-4px;z-index:3;
+  font-family:var(--disp);font-size:.8rem;letter-spacing:.9px;white-space:nowrap;
+  background:var(--bronze);color:#FFF8E8;padding:1px 6px;border-radius:7px}
+@media (max-width:760px){ .wbtns{margin-left:0;width:100%} .wbtns .btn1,.wbtns .btn2{flex:1} }
 </style>
 </head>
 <body>
@@ -456,6 +500,13 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
             <div class="track"><div class="fill" id="thermFill"></div></div>
             <em id="thermNum">0</em></div>
         </div>
+        <div class="wordask" id="wordask" hidden>
+          <span class="wtxt"><b id="wordwho"></b></span>
+          <span class="wbtns" id="wbtns">
+            <button class="btn1 sm" data-act="wordyes">Засчитать</button>
+            <button class="btn2 sm" data-act="wordno">Не засчитать</button>
+          </span>
+        </div>
         <div class="pairs" id="pairs">
           <p class="emptyhint">Ходите картой-проблемой — нажмите на карту в своей руке.</p>
         </div>
@@ -470,6 +521,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
         <button class="btn2 tiny" data-act="stop" aria-pressed="false">СТОП-КАДР</button>
         <button class="btn2 tiny" data-act="sum">ИТОГ КОНА</button>
       </div>
+      <button class="btn2 wide" data-act="beat" style="margin-top:5px">Всё в отбой</button>
       <div class="trumppick"><span>КОЗЫРЬ КОНА</span>
         <div class="weather" id="weather">
           <i data-s="stress" style="background:#CA1A1A"></i><i data-s="conf" style="background:#DC936C"></i>
@@ -481,9 +533,11 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
       <h4>ЧЕМ БЬЁТСЯ ПРОБЛЕМА</h4>
       <ul>
         <li><span class="k">В Д К Т</span>Решением своей масти</li>
-        <li><span class="k">6→10</span>Проблемой той же масти старше</li>
-        <li><span class="k g">КОЗЫРЬ</span>Любой козырной картой</li>
-        <li><span class="k c">ДЖОКЕР</span>Бьёт что угодно</li>
+        <li><span class="k g">КОЗЫРЬ</span>Решением козырной масти</li>
+        <li><span class="k c">ПОФИГ</span>Джокер бьёт что угодно</li>
+        <li><span class="k g">СВОЙ ПРИМЕР</span>Рассказом — если ведущий засчитал</li>
+        <li style="color:#A81414;margin-top:7px"><span class="k" style="background:#A81414">6→10</span>Проблемой крыть нельзя</li>
+      </ul>
       </ul>
     </aside>
 
@@ -492,21 +546,80 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
     <div class="overlay" id="rules">
       <div class="sheet">
         <h3>Как играем</h3>
-        <p class="lead">Как в «дурака» — только вместо мастей типы стресса, а вместо карт рабочие ситуации.</p>
-        <h5>ХОД</h5>
+        <p class="lead">Колода из 49 карт. Пять мастей — это типы стресса.
+          <b>6–10 — проблемы</b>, реальные рабочие ситуации. <b>В, Д, К, Т — решения</b>,
+          ваши ресурсы и инструменты. Плюс четыре джокера «ПОФИГ».</p>
+
+        <h5>КТО ХОДИТ</h5>
         <ol>
-          <li>Ходите картой-проблемой (6–10) и читаете ситуацию вслух — от первого лица.</li>
-          <li>Сосед слева отбивается и объясняет, почему это решение здесь сработает.</li>
-          <li>Пока подход не закрыт, любой может подкинуть проблему <b>того же номинала — любой масти</b>.</li>
-          <li>Отбился — всё уходит в отбой. Не отбился — забирает карты себе.</li>
-          <li>Все добирают до шести, ход идёт дальше по кругу.</li>
+          <li>Ходит тот, чьё место подсвечено надписью <b>ХОДИТ</b>. Отбивается сосед слева —
+              его место помечено <b>ОТБИВАЕТСЯ</b>.</li>
+          <li>Первым ходит тот, у кого младшая козырная проблема. Стол определяет это сам.</li>
         </ol>
-        <h5>ЧТО ЗНАЧАТ ЦВЕТА НА СТОЛЕ</h5>
+
+        <h5>ЧТО ДЕЛАЕТЕ ВЫ</h5>
         <ol>
-          <li><b>Золото</b> — колода, козырь, рама стола. Постоянное.</li>
-          <li><b>Цветом ключевой карты</b> — той, с которой пошли — горит место того, кто ходит.</li>
-          <li>Подкинутые карты других мастей лежат в своих цветах: видно, сколько мастей стянулось на один номинал.</li>
+          <li><b>Ходите проблемой.</b> Нажмите карту — она откроется крупно. Прочитайте
+              ситуацию вслух от первого лица, потом нажмите «Сыграть эту карту».</li>
+          <li><b>Закрываете проблему</b> решением — так же, через увеличение, вслух объясняя,
+              почему это сработает.</li>
+          <li><b>Подкидываете</b> проблему того же номинала, любой масти, пока подход открыт.</li>
+          <li><b>«Свой пример»</b> — если крыть нечем, см. ниже.</li>
+          <li><b>«Беру»</b> — если не закрыли и примера нет.</li>
+          <li><b>«Бито»</b> — атакующий закрывает подход, когда всё на столе закрыто.</li>
         </ol>
+
+        <h5>ЧТО ДЕЛАЕТ СТОЛ САМ</h5>
+        <ol>
+          <li>Тасует колоду и раздаёт по шесть карт.</li>
+          <li>Открывает козырь и назначает, кто ходит первым.</li>
+          <li>Ведёт очередь по кругу и подсвечивает её.</li>
+          <li>Добирает всем до шести после каждого подхода — в правильном порядке.</li>
+          <li>Уводит закрытое в отбой и выводит из партии тех, у кого проблем не осталось.</li>
+          <li>Подсвечивает золотой рамкой карты, которыми можно сходить прямо сейчас.</li>
+        </ol>
+
+        <h5>КОГДА ПРОБЛЕМА СЧИТАЕТСЯ ЗАКРЫТОЙ</h5>
+        <ol>
+          <li><b>Решением своей масти</b> — В, Д, К или Т того же типа стресса.</li>
+          <li><b>Козырным решением</b> — В, Д, К или Т козырной масти, любую проблему.</li>
+          <li><b>Джокером «ПОФИГ»</b> — он бьёт что угодно.</li>
+          <li><b>Своим примером</b> — если ведущий засчитал.</li>
+        </ol>
+
+        <h5>ПРОБЛЕМОЙ КРЫТЬ НЕЛЬЗЯ</h5>
+        <ol>
+          <li>Проблема не закрывается проблемой — <b>даже более старшей и даже козырной</b>.
+              Цифры 6–10 это трудности, а трудность не решается другой трудностью.
+              Закрывают только решения: В, Д, К, Т.</li>
+        </ol>
+
+        <h5>КОЗЫРЬ: ПРОБЛЕМА И РЕШЕНИЕ — РАЗНОЕ</h5>
+        <ol>
+          <li>Козырь — масть, открытая рядом с колодой. Она усиливает <b>только решения</b>.</li>
+          <li><b>Козырное решение (В, Д, К, Т козырной масти) — универсальный ключ.</b>
+              Закрывает проблему любой масти, а не только своей. Таких карт в колоде всего
+              четыре, и они лежат у кого-то на руках — берегите их и не тратьте на проблему,
+              которую можно закрыть обычным решением своей масти.</li>
+          <li><b>Козырная проблема (6–10 козырной масти) — обычная проблема.</b> Никакого
+              преимущества у неё нет: ею нельзя ничего закрыть, её можно только сыграть
+              или подкинуть. Козырь не делает трудность решением.</li>
+          <li>Единственная особая роль козырной проблемы — в начале партии: у кого младшая
+              козырная проблема, тот и ходит первым.</li>
+        </ol>
+
+        <h5>СВОЙ ПРИМЕР — ГЛАВНАЯ ВОЗМОЖНОСТЬ ИГРЫ</h5>
+        <ol>
+          <li>Нечем закрыть — нажмите <b>«Свой пример»</b> и расскажите, как вы справляетесь
+              с такой ситуацией в жизни: какими приёмами, ресурсами, привычками.</li>
+          <li>Стол замирает: все слушают, никто не ходит.</li>
+          <li><b>Решение принимает ведущий</b>, а не тот, под кого ходили. Он нажимает
+              «Засчитать» или «Не засчитать».</li>
+          <li>Засчитано — на карте появляется метка <b>СВОЙ ПРИМЕР</b>, проблема закрыта
+              наравне с побитой картой и уходит в отбой.</li>
+          <li>Не засчитано — закрывайте картой или берите.</li>
+        </ol>
+
         <h5>ГЛАВНОЕ ПРАВИЛО</h5>
         <ol><li>Карта не закрывает проблему, пока не прозвучали слова. Не спешите.</li></ol>
         <p style="margin:18px 0 0"><button class="btn1" id="closeRules">Понятно, играем</button></p>
@@ -534,6 +647,18 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
     </div>
 
     <div class="flash" id="flash"><b>ПОФИГ</b></div>
+
+    <div class="zoom" id="zoom">
+      <span class="zhint">нажмите на фон, чтобы закрыть</span>
+      <div class="zbox">
+        <img id="zimg" alt="">
+        <div class="zbar">
+          <span class="zname" id="zname"></span>
+          <div class="zbtns" id="zbtns"></div>
+        </div>
+      </div>
+    </div>
+
 
     <div class="overlay" id="joinbox" open>
       <div class="sheet" style="width:min(420px,94%);text-align:center">
@@ -592,6 +717,9 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
       </div>
       <span class="vr"></span>
       <span class="actrow">
+      <button class="btn2 sm" id="wordBtn" hidden>
+        <svg viewBox="0 0 24 24"><path d="M20 12.5c0 3.6-3.6 6.5-8 6.5-1 0-2-.15-2.9-.42L4 20.5l1.5-3.6C4.3 15.7 3.6 14.2 3.6 12.5 3.6 8.9 7.2 6 11.6 6S20 8.9 20 12.5z"/></svg>
+        Свой пример</button>
       <button class="btn2 sm" id="actBtn"></button>
       <button class="btn1 sm" id="pofigBtn">
         <svg viewBox="0 0 24 24"><path d="M12 2.6l2.25 5.15L19.4 10l-5.15 2.25L12 17.4l-2.25-5.15L4.6 10l5.15-2.25z"/>
@@ -607,7 +735,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 /* ═══ ПОФИГУ — клиент. Всё состояние приходит с сервера;
        здесь только отрисовка и отправка ходов. ═══ */
 const BASE = 'https://lh3.googleusercontent.com/d/';
-const U = id => BASE + id + '=w520';
+const U    = id => BASE + id + '=w520';
+const UBIG = id => BASE + id + '=w1200';   /* для увеличения — чтобы текст был чётким */
 const safe = img => { img.onerror = () => { img.removeAttribute('src');
   img.style.background='repeating-linear-gradient(45deg,#D6C4A3 0 6px,#C2AB86 6px 12px)'; }; return img; };
 const BACK = '1kAaS7pol1qTUVutb7sbGc0eHxYQWDhrm';
@@ -679,6 +808,7 @@ function setLive(k){
 function render(){
   if (!S) return;
   document.querySelector('.host').classList.toggle('on', !!S.host);
+  document.body.classList.toggle('host-on', !!S.host);
   felt.classList.toggle('frozen', !!S.frozen);
 
   seatEls.forEach((el,i)=>{
@@ -712,7 +842,9 @@ function render(){
   dslot.style.opacity = S.started ? '1' : '.45';
   const ti=document.getElementById('trumpImg');
   const tslot=ti.parentElement;
-  if (S.trumpCard){ tslot.classList.add('filled'); ti.style.display='block'; safe(ti).src=U(S.trumpCard.id); }
+  if (S.trumpCard){ tslot.classList.add('filled'); ti.style.display='block'; safe(ti).src=U(S.trumpCard.id);
+    ti.style.cursor='zoom-in';
+    ti.onclick=()=>openZoom({id:S.trumpCard.id, s:S.trump, r:'', joker:false}, null); }
   else { tslot.classList.remove('filled'); ti.style.display='none'; ti.removeAttribute('src'); }
   const tn=document.getElementById('trumpName');
   if (S.started){ tn.innerHTML='<i></i>'+SUITS[S.trump].n; tn.style.setProperty('--tsuit',SUITS[S.trump].c); }
@@ -730,9 +862,17 @@ function render(){
     first ? label(first.a) : (S.over ? 'партия окончена' : 'не начат');
   document.getElementById('dots').innerHTML =
     [...new Set(S.table.map(p=>colOf(p.a)))].map(c=>`<i style="background:${c}"></i>`).join('');
-  const un = S.table.filter(p=>!p.d).length;
+  const un = S.table.filter(p=>!p.d&&!p.w).length;
   document.getElementById('thermFill').style.width = Math.min(un/6*100,100)+'%';
   document.getElementById('thermNum').textContent = un;
+
+  const wa=document.getElementById('wordask');
+  if (S.word){
+    wa.hidden=false;
+    document.getElementById('wordwho').textContent =
+      (S.seats[S.word.by]?.name||'Игрок')+' отвечает словами на «'+S.word.card+'»'
+      + (S.host ? ' — засчитываем?' : ' — ждём решения ведущего');
+  } else wa.hidden=true;
 
   const pe=document.getElementById('pairs');
   if (!S.table.length){
@@ -743,12 +883,16 @@ function render(){
       : S.me===S.attacker ? 'Ваш ход: выберите карту-проблему и прочитайте её вслух.'
       : 'Ходит '+(S.seats[S.attacker]?.name||'…')+'.'}</p>`;
   } else {
-    pe.innerHTML = S.table.map((p,i)=>`<div class="pair${i===0?' key':''}"
+    pe.innerHTML = S.table.map((p,i)=>`<div class="pair${i===0?' key':''}${p.w?' word':''}"
       style="--r:${(i*7%6-3)}deg;--sc:${colOf(p.a)}">
       <img class="atk" src="${U(p.a.id)}" alt="${label(p.a)}">
       ${p.d?`<img class="def" style="--dc:${colOf(p.d)}" src="${U(p.d.id)}" alt="${label(p.d)}">`:''}
       </div>`).join('');
-    pe.querySelectorAll('img').forEach(safe);
+    pe.querySelectorAll('img').forEach(im=>{ safe(im);
+      const p=S.table[[...pe.children].indexOf(im.closest('.pair'))];
+      const card = im.classList.contains('def') ? p.d : p.a;
+      im.style.cursor='zoom-in';
+      im.onclick=()=>openZoom(card,null); });
   }
   renderHand(); renderButtons(); renderLog();
 }
@@ -762,29 +906,55 @@ function renderHand(){
     d.tabIndex=0; d.title=label(c);
     d.innerHTML=`<img src="${U(c.id)}" alt="${label(c)}">`;
     safe(d.querySelector('img'));
-    const go=()=>{ if(!c.can) return;
-      send({ t: S.me===S.defender ? 'defend' : 'attack', i }); };
-    d.onclick=go; d.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} };
+    const open=()=>openZoom(c, i);
+    d.onclick=open; d.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} };
     handEl.appendChild(d);
   });
   document.getElementById('pofigBtn').classList.toggle('armed',
     (S.hand||[]).some(c=>c.joker&&c.can));
 }
+/* ── увеличение карты ── */
+const zoomEl=document.getElementById('zoom');
+function openZoom(c, handIndex){
+  const img=document.getElementById('zimg');
+  img.alt=label(c); safe(img).src=UBIG(c.id);
+  document.getElementById('zname').textContent=label(c);
+  const b=document.getElementById('zbtns'); b.innerHTML='';
+  if (handIndex!=null && c.can && !S.frozen){
+    const play=document.createElement('button');
+    play.className='btn1';
+    play.textContent = S.me===S.defender ? 'Закрыть этой картой' : 'Сыграть эту карту';
+    play.onclick=()=>{ send({ t: S.me===S.defender ? 'defend' : 'attack', i:handIndex });
+                       zoomEl.removeAttribute('open'); };
+    b.appendChild(play);
+  }
+  const close=document.createElement('button');
+  close.className='btn2'; close.textContent='Закрыть';
+  close.onclick=()=>zoomEl.removeAttribute('open');
+  b.appendChild(close);
+  zoomEl.setAttribute('open','');
+}
+zoomEl.onclick=e=>{ if(e.target===zoomEl) zoomEl.removeAttribute('open'); };
+
 const ICON={
   take:'<svg viewBox="0 0 24 24"><path d="M4.5 12.5h15M12 5.5l-7 7 7 7"/></svg>',
   done:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M8.2 12.4l2.6 2.6 5-5.5"/></svg>'
 };
 function renderButtons(){
   const b=document.getElementById('actBtn'), p=document.getElementById('pofigBtn');
-  const un=S.table.filter(x=>!x.d).length, iAmDef=S.me===S.defender;
+  const w=document.getElementById('wordBtn');
+  const un=S.table.filter(x=>!x.d&&!x.w).length, iAmDef=S.me===S.defender;
+  /* «Отвечу словами» — только защищающемуся и только когда есть что закрывать */
+  w.hidden = !(S.started && !S.over && iAmDef && un>0 && !S.word);
   if (!S.started||S.over){ b.innerHTML=ICON.done+'Бито'; b.disabled=true; }
   else if (iAmDef&&un){ b.innerHTML=ICON.take+'Беру'; b.disabled=false; }
   else if (!iAmDef&&S.table.length&&!un){ b.innerHTML=ICON.done+'Бито'; b.disabled=false; }
   else { b.innerHTML=ICON.done+'Бито'; b.disabled=true; }
   p.disabled = !(S.hand||[]).some(c=>c.joker&&c.can);
 }
+document.getElementById('wordBtn').onclick=()=>send({ t:'word' });
 document.getElementById('actBtn').onclick=()=>{
-  const un=S.table.filter(x=>!x.d).length;
+  const un=S.table.filter(x=>!x.d&&!x.w).length;
   send({ t: (S.me===S.defender && un) ? 'take' : 'beat' });
 };
 document.getElementById('pofigBtn').onclick=()=>{
@@ -802,6 +972,9 @@ document.querySelectorAll('[data-act]').forEach(btn=>{
     if (a==='peek')   send({ h:1, t:'reveal' });
     if (a==='stop')   send({ h:1, t:'freeze' });
     if (a==='sum')    showSum();
+    if (a==='beat')    send({ h:1, t:'beat' });
+    if (a==='wordyes') send({ h:1, t:'wordyes' });
+    if (a==='wordno')  send({ h:1, t:'wordno' });
   };
 });
 function showSum(){
@@ -869,8 +1042,9 @@ document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>shut(b.datase
 document.querySelectorAll('.overlay').forEach(o=>o.onclick=e=>{
   if(e.target===o && o.id!=='joinbox') o.removeAttribute('open'); });
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape') document.querySelectorAll('.overlay[open]').forEach(o=>{
-    if(o.id!=='joinbox') o.removeAttribute('open'); });
+  if(e.key==='Escape'){ zoomEl.removeAttribute('open');
+    document.querySelectorAll('.overlay[open]').forEach(o=>{
+      if(o.id!=='joinbox') o.removeAttribute('open'); }); }
 });
 
 safe(document.getElementById('deckImg')).src=U(BACK);
