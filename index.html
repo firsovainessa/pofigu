@@ -246,6 +246,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 .rx.used .n{display:block}
 /* охра требует тёмного текста */
 .rx.dark{color:#3B2F16}
+.actrow{display:contents}
 .vr{width:1px;height:26px;background:#A88F68;opacity:.7;margin:0 5px}
 
 /* ── поток жестов вверх, как эмодзи на живом голосовании ── */
@@ -324,6 +325,93 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
   70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.18)}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media (max-width:1080px){.host,.cheat{display:none}.seat{width:124px}.battle{width:470px}}
+
+/* ═══════════════ ТЕЛЕФОН ═══════════════
+   На узком экране круг мест не помещается: перестраиваем стол в столбик.
+   Места — сеткой по три, центр и панели — во всю ширину, рука — с прокруткой. */
+@media (max-width:760px){
+  html{font-size:62.5%}
+  body{font-size:1.5rem}
+  .app{height:auto;min-height:100dvh;max-width:100%;overflow:visible;
+       grid-template-rows:auto auto auto}
+
+  /* шапка компактнее */
+  .bar{flex-wrap:wrap;gap:8px;padding:8px 10px}
+  .room{display:none}
+  .status{font-size:1.15rem}
+  .author img{height:20px}
+  .mark b{font-size:1.7rem}
+
+  /* сукно превращается в обычную колонку */
+  .felt{display:flex;flex-wrap:wrap;gap:8px;padding:26px 10px 10px;height:auto;overflow:visible;
+        align-content:flex-start}
+  .felt::after{inset:4px;border-radius:18px}
+
+  /* места — по три в ряд */
+  .seat{position:static!important;left:auto!important;top:auto!important;bottom:auto!important;
+        transform:none!important;order:1;width:calc(33.333% - 6px);padding:6px 7px 7px}
+  .seat.active{transform:none!important}
+  .seat .av{width:24px;height:24px;font-size:1.2rem}
+  .seat .nm{font-size:1.25rem}
+  .seat .no{font-size:.9rem}
+  .cnt b{font-size:1.35rem}
+  .cnt span{font-size:.75rem}
+  .seat.active::after,.seat.out::after,.seat.def::after{font-size:.8rem;padding:1px 5px;top:-8px}
+  .seat.def::after{right:auto;left:11px;top:-8px}
+
+  /* центр стола */
+  .center{position:static!important;transform:none!important;order:2;width:100%;gap:10px}
+  .zones{gap:12px;justify-content:center;width:100%}
+  .slot{width:62px;height:94px}
+  .slot img{width:62px;height:94px}
+  .battle{width:100%;min-height:auto}
+  .battle .head{flex-wrap:wrap;gap:6px}
+  .pairs{min-height:70px;gap:10px}
+  .pair{width:54px;height:70px}
+  .pair img{width:54px;height:82px}
+  .pair .def{top:12px;left:11px}
+
+  /* панели — во всю ширину, ведущему сверху */
+  .panel{position:static!important;width:100%!important;left:auto!important;right:auto!important;
+         bottom:auto!important}
+  .host{order:0}
+  .cheat{order:3}
+  .g2{grid-template-columns:1fr 1fr}
+
+  /* рука и кнопки */
+  /* карты — сразу под столом, кнопки ниже */
+  .handzone{padding:0 10px 10px;display:flex;flex-direction:column}
+  .hand{order:0}
+  .handbar{order:1;flex-wrap:wrap;gap:6px;padding:4px 0}
+  .handbar .t{display:none}
+  .handbar .last{max-width:100%;margin-left:0;width:100%;order:5;
+                 font-size:1.2rem;white-space:normal}
+  .vr{display:none}
+  .react{display:grid;grid-template-columns:1fr 1fr;gap:5px;width:100%;order:2}
+  .rx{width:auto;padding:7px 8px 7px 6px;font-size:1.25rem;gap:6px}
+  .rx .ic{width:24px;height:24px}
+  .rx .ic svg{width:16px;height:16px}
+  .actrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;order:3}
+  #actBtn,#pofigBtn{width:100%;justify-content:center;padding:12px 10px;font-size:1.5rem}
+  .hand{height:auto;justify-content:flex-start;overflow-x:auto;overflow-y:visible;
+        padding:6px 0 10px;-webkit-overflow-scrolling:touch}
+  .hcard{margin-inline:-4px}
+  .hcard:hover,.hcard:focus-visible{transform:translateY(-10px) scale(1.05)}
+
+  /* окна поверх стола — всегда по центру экрана */
+  .overlay{position:fixed;z-index:100;padding:14px}
+  .sheet{width:100%;max-width:440px;max-height:86vh;padding:18px 18px 20px}
+  .sheet h3{font-size:2rem}
+  .reconn{position:fixed;top:auto;bottom:14px}
+  .flash b{font-size:6rem}
+}
+/* совсем узкие экраны */
+@media (max-width:420px){
+  .seat{width:calc(50% - 4px)}
+  .rx{font-size:1.15rem;padding:6px 5px}
+  .slot{width:56px;height:84px}
+  .slot img{width:56px;height:84px}
+}
 </style>
 </head>
 <body>
@@ -503,11 +591,13 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
           </svg></span>Держись!<span class="n">0</span></button>
       </div>
       <span class="vr"></span>
+      <span class="actrow">
       <button class="btn2 sm" id="actBtn"></button>
       <button class="btn1 sm" id="pofigBtn">
         <svg viewBox="0 0 24 24"><path d="M12 2.6l2.25 5.15L19.4 10l-5.15 2.25L12 17.4l-2.25-5.15L4.6 10l5.15-2.25z"/>
           <path d="M18.4 15.6l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z"/></svg>
         Пофиг!</button>
+      </span>
     </div>
     <div class="hand" id="hand"></div>
   </section>
