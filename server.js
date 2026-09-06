@@ -230,8 +230,8 @@ wss.on('connection', (sock, req) => {
       if (seat<0) seat = R.players.findIndex(p => !p);
       if (seat<0){ sock.send(JSON.stringify({ type:'full' })); return; }
       if (!R.players[seat]) { R.players[seat] = { name, hand:[], sock }; R.out[seat]=true;
-                              say(name+' сел на место '+(seat+1)); }
-      else { R.players[seat].sock = sock; say(name+' вернулся за стол'); }
+                              say(name+' — место '+(seat+1)); }
+      else { R.players[seat].sock = sock; say(name+' снова за столом'); }
       c.seat = seat;
     }
     else if (c.host && m.h) hostAct(m);

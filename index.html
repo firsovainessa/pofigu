@@ -600,7 +600,7 @@ function render(){
         <div class="no">МЕСТО ${i+1}</div></div></div>`;
       return;
     }
-    el.className='seat'+(p.out?' out':'')+(i===S.me?' me':'')
+    el.className='seat'+(S.started&&p.out?' out':'')+(i===S.me?' me':'')
       +(S.started && !S.over && i===S.attacker?' active':'')
       +(S.started && !S.over && i===S.defender?' def':'');
     el.innerHTML=`<div class="who"><div class="av" style="background:${AV[i]}">${p.name[0]}</div>
@@ -618,10 +618,15 @@ function render(){
   });
 
   document.getElementById('deckCount').textContent = S.deck;
+  const dslot=document.getElementById('deckImg').parentElement;
+  dslot.style.opacity = S.started ? '1' : '.45';
   const ti=document.getElementById('trumpImg');
-  if (S.trumpCard) safe(ti).src = U(S.trumpCard.id); else ti.removeAttribute('src');
+  const tslot=ti.parentElement;
+  if (S.trumpCard){ tslot.classList.add('filled'); ti.style.display='block'; safe(ti).src=U(S.trumpCard.id); }
+  else { tslot.classList.remove('filled'); ti.style.display='none'; ti.removeAttribute('src'); }
   const tn=document.getElementById('trumpName');
-  tn.innerHTML='<i></i>'+SUITS[S.trump].n; tn.style.setProperty('--tsuit',SUITS[S.trump].c);
+  if (S.started){ tn.innerHTML='<i></i>'+SUITS[S.trump].n; tn.style.setProperty('--tsuit',SUITS[S.trump].c); }
+  else { tn.innerHTML='ещё не открыт'; }
   const dz=document.getElementById('discard');
   dz.classList.toggle('filled', S.discard>0);
   dz.innerHTML = S.discard ? `<img alt="Отбой"><span class="deckcount">${S.discard}</span>` : '';
