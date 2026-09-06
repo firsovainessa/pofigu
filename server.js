@@ -8,15 +8,19 @@ const http = require('http');
 const fs   = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const os   = require('os');
 const { WebSocketServer } = require('ws');
 
 const PORT = process.env.PORT || 3000;   /* App Platform сама задаёт порт; 3000 — запасной */
 const ROOT = __dirname;
-/* секрет ведущего: генерируется один раз и лежит рядом в файле */
-const KEYFILE = path.join(ROOT, 'host.key');
-let HOST_KEY = fs.existsSync(KEYFILE) ? fs.readFileSync(KEYFILE,'utf8').trim()
-                                      : crypto.randomBytes(4).toString('hex');
-fs.writeFileSync(KEYFILE, HOST_KEY);
+/* Секрет ведущего. Папка приложения на платформе доступна только для чтения,
+   поэтому ключ храним во временной папке, а если и туда нельзя — просто в памяти.
+   Чтобы ссылка ведущего не менялась при перезапусках, задайте переменную HOST_KEY. */
+const KEYFILE = path.join(os.tmpdir(), 'pofigu-host.key');
+let HOST_KEY = (process.env.HOST_KEY || '').trim();
+if (!HOST_KEY) { try { HOST_KEY = fs.readFileSync(KEYFILE, 'utf8').trim(); } catch (e) {} }
+if (!HOST_KEY) HOST_KEY = crypto.randomBytes(4).toString('hex');
+try { fs.writeFileSync(KEYFILE, HOST_KEY); } catch (e) { /* только чтение — работаем из памяти */ }
 
 /* ─────────── колода ─────────── */
 const SUITS = { stress:'СТРЕСС', conf:'КОНФЛИКТ', time:'ТАЙМХАОС', res:'РЕСУРСЫ', abs:'НЕЛЕПЫЕ' };
