@@ -52,7 +52,7 @@ const R = {
   deck:[], trumpCard:null, trump:'time',
   table:[], discard:0, attacker:0, defender:1,
   out:Array(SEATS).fill(true), started:false, over:false,
-  frozen:false, reveal:false, log:[], gestures:{}
+  frozen:false, reveal:false, log:[], gestures:{}, word:null
 };
 const say = t => { R.log.push({ t:new Date().toTimeString().slice(0,5), x:t });
                    if (R.log.length>200) R.log.shift(); };
@@ -66,13 +66,13 @@ function startGame(){
   R.deck = freshDeck();
   R.trumpCard = R.deck[R.deck.length-1];
   R.trump = R.trumpCard.joker ? SK[(Math.random()*5)|0] : R.trumpCard.s;
-  R.table=[]; R.discard=0; R.over=false; R.started=true; R.gestures={};
+  R.table=[]; R.discard=0; R.over=false; R.started=true; R.gestures={}; R.word=null;
   R.out = R.players.map(p => !p);
   seated.forEach(i => R.players[i].hand = []);
   for (let k=0;k<6;k++) seated.forEach(i => R.players[i].hand.push(R.deck.shift()));
   let best=null;
   seated.forEach(i => R.players[i].hand.forEach(c => {
-    if (!c.joker && c.s===R.trump && (best===null || c.v<best.v)) best={ i, v:c.v };
+    if (!c.joker && isProblem(c.r) && c.s===R.trump && (best===null || c.v<best.v)) best={ i, v:c.v };
   }));
   R.attacker = best ? best.i : seated[0];
   R.defender = nextAlive(R.attacker);
@@ -80,17 +80,26 @@ function startGame(){
 }
 
 /* ─────────── правила ─────────── */
-const beats = (a,d) => d.joker ? true : a.joker ? false
-  : (d.s===a.s ? d.v>a.v : d.s===R.trump);
-const unbeaten = () => R.table.filter(p=>!p.d);
+/* Проблему (6–10) кроет только решение (В, Д, К, Т) — своей масти или козырное.
+   Проблема проблемой не кроется, даже более старшая: это принципиальное
+   отличие ПОФИГУ от «дурака». Джокер «ПОФИГ» кроет что угодно. */
+const isSolution = c => !c.joker && !isProblem(c.r);
+const beats = (a,d) => {
+  if (d.joker) return true;          /* ПОФИГ бьёт всё */
+  if (a.joker) return false;         /* ПОФИГ не бьётся ничем */
+  if (!isSolution(d)) return false;  /* проблемой крыть нельзя */
+  return d.s === a.s || d.s === R.trump;
+};
+const unbeaten = () => R.table.filter(p => !p.d && !p.word);
 const ranksOnTable = () => [...new Set(R.table.flatMap(p=>p.d?[p.a.r,p.d.r]:[p.a.r]))];
 const maxAttacks = () => Math.min(6,
   (R.players[R.defender]?.hand.length||0) + R.table.filter(p=>p.d).length);
 function canAttack(c){
-  if (!R.table.length) return !c.joker;
+  if (c.joker || !isProblem(c.r)) return false;   /* заходят и подкидывают только проблемой */
+  if (!R.table.length) return true;
   if (R.table.length >= maxAttacks()) return false;
   if (unbeaten().length) return false;
-  return !c.joker && ranksOnTable().includes(c.r);
+  return ranksOnTable().includes(c.r);            /* тот же номинал, любая масть */
 }
 const canDefend = c => unbeaten().length>0 && beats(unbeaten()[0].a, c);
 
@@ -111,22 +120,46 @@ function endTurn(newAttacker){
     say('Партия окончена. Застрявший — ' + (w!==undefined ? R.players[w].name : 'никто'));
     return;
   }
-  R.attacker = R.out[newAttacker] || !R.players[newAttacker] ? nextAlive(newAttacker) : newAttacker;
+  let a = R.out[newAttacker] || !R.players[newAttacker] ? nextAlive(newAttacker) : newAttacker;
+  /* ходить можно только проблемой: ищем того, у кого она есть */
+  const hasProblem = i => R.players[i] && !R.out[i] &&
+                          R.players[i].hand.some(c => !c.joker && isProblem(c.r));
+  let guard = 0;
+  while (!hasProblem(a) && guard++ < SEATS) a = nextAlive(a);
+  if (!hasProblem(a)){
+    R.over = true;
+    say('Проблем не осталось ни у кого — партия окончена');
+    return;
+  }
+  R.attacker = a;
   R.defender = nextAlive(R.attacker);
 }
 
 /* ─────────── действия ─────────── */
 function act(seat, m){
   if (R.frozen && m.t!=='gesture') return;
+  if (R.word && m.t!=='gesture' && m.t!=='word') return;
   const me = R.players[seat]; if (!me) return;
 
   if (m.t==='attack' && R.started && !R.over){
     if (seat===R.defender) return;
-    const c = me.hand[m.i]; if (!c || !canAttack(c)) return;
-    if (R.table.length===0 && seat!==R.attacker) return;   /* заходит только атакующий */
-    me.hand.splice(m.i,1);
-    R.table.push({ a:c, d:null, by:seat });
-    say((R.table.length===1?'Ходит ':'Подкинул ')+me.name+': '+label(c));
+    /* Карты одного номинала выкладываются одним движением: m.is — список индексов.
+       Старый формат с одной картой (m.i) продолжает работать. */
+    let idx = Array.isArray(m.is) ? m.is : [m.i];
+    idx = [...new Set(idx.filter(i => Number.isInteger(i) && me.hand[i]))];
+    if (!idx.length) return;
+    const cards = idx.map(i => me.hand[i]);
+    if (new Set(cards.map(c=>c.r)).size > 1) return;        /* только один номинал */
+    if (!canAttack(cards[0])) return;
+    if (R.table.length===0 && seat!==R.attacker) return;    /* заходит только атакующий */
+    const room = maxAttacks() - R.table.length;             /* сколько мест на столе */
+    if (room <= 0) return;
+    const play = idx.slice(0, room).map(i => ({ i, c: me.hand[i] }));
+    const first = R.table.length===0;
+    play.map(x=>x.i).sort((a,b)=>b-a).forEach(i => me.hand.splice(i,1));
+    play.forEach(x => R.table.push({ a:x.c, d:null, by:seat }));
+    say((first?'Ходит ':'Подкинул ')+me.name+': '
+        + play.map(x=>label(x.c)).join(', '));
   }
   if (m.t==='defend' && R.started && !R.over){
     if (seat!==R.defender) return;
@@ -137,9 +170,19 @@ function act(seat, m){
   }
   if (m.t==='take' && R.started && !R.over){
     if (seat!==R.defender || !unbeaten().length) return;
-    R.table.forEach(p => { me.hand.push(p.a); if (p.d) me.hand.push(p.d); });
-    say(me.name+' забирает '+R.table.length+' ситуац.');
+    const takes = R.table.filter(p => !p.d && !p.word);
+    const closed = R.table.filter(p => p.d || p.word);
+    takes.forEach(p => me.hand.push(p.a));
+    R.discard += closed.reduce((n,p)=>n+(p.d?2:1),0);
+    say(me.name+' забирает '+takes.length+' ситуац.'
+        + (closed.length ? ' (закрытые уходят в отбой)' : ''));
     R.table=[]; endTurn(nextAlive(seat));
+  }
+  /* защищающийся не бьёт картой, а рассказывает своё решение */
+  if (m.t==='word' && R.started && !R.over){
+    if (seat!==R.defender || !unbeaten().length || R.word) return;
+    R.word = { by:seat, card: label(unbeaten()[0].a) };
+    say(me.name+' приводит свой пример на «'+R.word.card+'» — слово ведущему');
   }
   if (m.t==='beat' && R.started && !R.over){
     if (seat===R.defender || !R.table.length || unbeaten().length) return;
@@ -159,6 +202,25 @@ function hostAct(m){
   if (m.t==='new')     { startGame(); }
   if (m.t==='freeze')  { R.frozen=!R.frozen; say(R.frozen?'Стоп-кадр — разбираем ситуацию':'Стоп-кадр снят, играем дальше'); }
   if (m.t==='reveal')  { R.reveal=!R.reveal; say(R.reveal?'Ведущий открыл руки':'Руки снова закрыты'); }
+  if (m.t==='wordyes'){                    /* ведущий засчитал устный ответ */
+    if (!R.word) return;
+    const slot = unbeaten()[0];
+    if (slot){ slot.word = true; slot.wordBy = R.word.by; }
+    say('Ведущий засчитал пример: «'+R.word.card+'» закрыта');
+    R.word = null;
+  }
+  if (m.t==='wordno'){                     /* не засчитал */
+    if (!R.word) return;
+    say('Ведущий не засчитал пример — нужно закрыть картой или забрать');
+    R.word = null;
+  }
+  if (m.t==='beat'){                       /* ведущий закрывает подход */
+    if (!R.started || R.over || !R.table.length) return;
+    if (unbeaten().length) return say('Сначала нужно отбиться или забрать');
+    R.discard += R.table.reduce((n,p)=>n+(p.d?2:1),0);
+    say('Ведущий закрыл подход: ' + R.table.length + ' в отбой');
+    const d=R.defender; R.table=[]; endTurn(d);
+  }
   if (m.t==='kick' && R.players[m.i]) {
     say(R.players[m.i].name+' удалён со стола');
     if (R.players[m.i].sock) try{ R.players[m.i].sock.close(); }catch(e){}
@@ -178,7 +240,9 @@ function publicState(){
     deck:R.deck.length, discard:R.discard, trump:R.trump,
     trumpCard:R.started ? { id:R.trumpCard.id } : null,
     table:R.table.map(p=>({ a:{ s:p.a.s, r:p.a.r, id:p.a.id, joker:!!p.a.joker },
-                            d:p.d?{ s:p.d.s, r:p.d.r, id:p.d.id, joker:!!p.d.joker }:null, by:p.by })),
+                            d:p.d?{ s:p.d.s, r:p.d.r, id:p.d.id, joker:!!p.d.joker }:null,
+                            w:!!p.word, by:p.by })),
+    word: R.word ? { by:R.word.by, card:R.word.card } : null,
     attacker:R.attacker, defender:R.defender,
     started:R.started, over:R.over, frozen:R.frozen, reveal:R.reveal,
     log:R.log.slice(-60), gestures:R.gestures, hostKey:null

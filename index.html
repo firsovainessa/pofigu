@@ -51,6 +51,9 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 .btn2:disabled:hover{background:#47627F;color:#D3E8FF}
 /* вариации по аналогии от тех же значений */
 .btn1.sm,.btn2.sm{padding:8px 14px;font-size:1.3rem;line-height:1.8rem;border-radius:8px}
+/* «выложить все одного номинала» — та же кнопка, но бронзовая, чтобы не спутать */
+.btn1.alt{background-color:#9A7C46}
+.btn1.alt:hover{background:#836739}
 .btn2.wide{display:block;width:100%;text-align:left;padding:9px 12px;font-size:1.3rem;
   line-height:1.8rem;border-radius:8px;margin-bottom:5px}
 .btn2.tiny{padding:6px 4px;font-size:1.05rem;line-height:1.3rem;border-radius:7px;
@@ -251,14 +254,20 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 .vr{width:1px;height:26px;background:#A88F68;opacity:.7;margin:0 5px}
 
 /* ── поток жестов вверх, как эмодзи на живом голосовании ── */
-.float{position:absolute;pointer-events:none;z-index:60;width:34px;height:34px;border-radius:50%;
-  background:#FFFDF8;display:grid;place-items:center;
-  box-shadow:0 4px 12px -3px rgba(70,50,25,.55);animation:fly 1.8s ease-out forwards}
-.float svg{width:21px;height:21px;display:block}
+.float{position:absolute;pointer-events:none;z-index:60;width:44px;height:44px;border-radius:50%;
+  background:#FFFDF8;display:grid;place-items:center;will-change:transform,opacity;
+  box-shadow:0 6px 18px -4px rgba(70,50,25,.5);animation:fly 2.4s cubic-bezier(.18,.7,.3,1) forwards}
+.float svg{width:26px;height:26px;display:block}
+/* значок вылетает из плашки, поднимается на игровое поле и тает в воздухе */
 @keyframes fly{
-  0%{opacity:0;transform:translate(-50%,0) scale(.4) rotate(0)}
-  14%{opacity:1;transform:translate(-50%,-24px) scale(1.05) rotate(0)}
-  100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-215px) scale(.8) rotate(var(--rot,0deg))}}
+  0%  {opacity:0;transform:translate(-50%,0) scale(.3) rotate(0);filter:blur(0)}
+  10% {opacity:1;transform:translate(calc(-50% + var(--dx,0px)*.15),calc(var(--dy,-260px)*.12))
+        scale(1.15) rotate(calc(var(--rot,0deg)*.15))}
+  55% {opacity:1;transform:translate(calc(-50% + var(--dx,0px)*.62),calc(var(--dy,-260px)*.62))
+        scale(1.3) rotate(calc(var(--rot,0deg)*.62))}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),var(--dy,-260px))
+        scale(1.7) rotate(var(--rot,0deg));filter:blur(4px)}}
+@media (prefers-reduced-motion:reduce){ .float{animation-duration:.9s} }
 
 /* игровые кнопки — та же спецификация сайта, плюс пиктограмма */
 .btn1.sm,.btn2.sm{display:inline-flex;align-items:center;gap:7px}
@@ -278,6 +287,11 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
   filter:drop-shadow(0 6px 12px rgba(70,50,25,.5))}
 /* подсказка: этой картой сейчас можно подкинуть */
 .hcard.can img{outline:3px solid var(--bronze);outline-offset:1px}
+/* сколько ещё таких же карт в руке — их можно выложить одним движением */
+.hcard .dup{position:absolute;top:-6px;right:-2px;z-index:6;pointer-events:none;
+  min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--bronze);
+  color:#fff;font:700 1.2rem/22px var(--ui);text-align:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.35)}
 .hcard.gone{opacity:0;transform:translateY(-150px) scale(.7);pointer-events:none}
 
 /* ─────── оверлеи (absolute внутри стола — безопасно для iframe) ─────── */
@@ -561,9 +575,15 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
         <ol>
           <li><b>Ходите проблемой.</b> Нажмите карту — она откроется крупно. Прочитайте
               ситуацию вслух от первого лица, потом нажмите «Сыграть эту карту».</li>
+          <li><b>Несколько карт одного номинала — одним движением.</b> Если на руках
+              две-три проблемы с одной цифрой (например, две семёрки разных мастей),
+              на карте стоит бронзовый значок <b>×2</b>. Откройте любую из них и нажмите
+              <b>«Выложить все»</b> — они лягут на стол сразу, по одной каждую класть
+              не нужно. Прочитайте вслух все ситуации, которые выложили.</li>
           <li><b>Закрываете проблему</b> решением — так же, через увеличение, вслух объясняя,
               почему это сработает.</li>
-          <li><b>Подкидываете</b> проблему того же номинала, любой масти, пока подход открыт.</li>
+          <li><b>Подкидываете</b> проблему того же номинала, любой масти, пока подход открыт, —
+              тоже по одной или все сразу кнопкой «Выложить все».</li>
           <li><b>«Свой пример»</b> — если крыть нечем, см. ниже.</li>
           <li><b>«Беру»</b> — если не закрыли и примера нет.</li>
           <li><b>«Бито»</b> — атакующий закрывает подход, когда всё на столе закрыто.</li>
@@ -576,7 +596,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
           <li>Ведёт очередь по кругу и подсвечивает её.</li>
           <li>Добирает всем до шести после каждого подхода — в правильном порядке.</li>
           <li>Уводит закрытое в отбой и выводит из партии тех, у кого проблем не осталось.</li>
-          <li>Подсвечивает золотой рамкой карты, которыми можно сходить прямо сейчас.</li>
+          <li>Подсвечивает золотой рамкой карты, которыми можно сходить прямо сейчас,
+              и ставит значок <b>×2</b>, если такую же цифру можно выложить не одну.</li>
+          <li>Следит за размером подхода: больше, чем у отбивающегося карт на руках,
+              на стол не ляжет — лишние из «Выложить все» останутся у вас.</li>
         </ol>
 
         <h5>КОГДА ПРОБЛЕМА СЧИТАЕТСЯ ЗАКРЫТОЙ</h5>
@@ -619,6 +642,26 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
               наравне с побитой картой и уходит в отбой.</li>
           <li>Не засчитано — закрывайте картой или берите.</li>
         </ol>
+
+        <h5>ЖЕСТЫ: ЧЕТЫРЕ КНОПКИ ПОД РУКОЙ</h5>
+        <p>Пока один говорит, остальные не молчат в пустоту. Четыре цветные плашки внизу
+          экрана — это ваш голос за столом. Нажали — значок вылетает на игровое поле,
+          поднимается над картами и тает, а рядом с тем, кто сейчас говорит, всплывает
+          подпись. Счётчик на плашке показывает, сколько раз жест прозвучал за партию.</p>
+        <ol>
+          <li><b>Знакомо!</b> — «эта ситуация про меня». Самый ценный жест: он показывает
+              ведущему, какие стрессы в команде общие, а не личные.</li>
+          <li><b>Годится!</b> — «хорошее решение, забираю себе». Так за столом собирается
+              копилка рабочих инструментов.</li>
+          <li><b>Да ладно!</b> — дружеская ирония: «ну-ну, знаем мы такие решения».
+              Не обесценивание, а разрядка: смех снимает напряжение быстрее любого совета.</li>
+          <li><b>Держись!</b> — сочувствие и поддержка, когда человек рассказывает
+              тяжёлую историю и решения у неё нет.</li>
+        </ol>
+        <p>Жать можно в любой момент, даже не в свой ход, и сколько угодно раз —
+          кнопка отдыхает секунду, чтобы стол не превратился в фейерверк. Жест адресуется
+          тому, кто последним положил карту: отдельного разрешения не нужно, никого он
+          не обижает и на ход игры не влияет.</p>
 
         <h5>ГЛАВНОЕ ПРАВИЛО</h5>
         <ol><li>Карта не закрывает проблему, пока не прозвучали слова. Не спешите.</li></ol>
@@ -898,6 +941,13 @@ function render(){
 }
 
 const handEl=document.getElementById('hand');
+/* индексы всех карт руки того же номинала, которыми можно ходить прямо сейчас
+   (только атакующему — защита кроет строго по одной) */
+function sameRank(i){
+  const h=S.hand||[], c=h[i];
+  if (!c || !c.can || c.joker || S.me===S.defender || S.frozen) return [i];
+  return h.map((x,j)=>({x,j})).filter(o=>o.x.can && !o.x.joker && o.x.r===c.r).map(o=>o.j);
+}
 function renderHand(){
   handEl.innerHTML='';
   (S.hand||[]).forEach((c,i)=>{
@@ -906,6 +956,9 @@ function renderHand(){
     d.tabIndex=0; d.title=label(c);
     d.innerHTML=`<img src="${U(c.id)}" alt="${label(c)}">`;
     safe(d.querySelector('img'));
+    const n = sameRank(i).length;
+    if (n>1){ const b=document.createElement('span');
+              b.className='dup'; b.textContent='\u00d7'+n; d.appendChild(b); }
     const open=()=>openZoom(c, i);
     d.onclick=open; d.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} };
     handEl.appendChild(d);
@@ -927,6 +980,15 @@ function openZoom(c, handIndex){
     play.onclick=()=>{ send({ t: S.me===S.defender ? 'defend' : 'attack', i:handIndex });
                        zoomEl.removeAttribute('open'); };
     b.appendChild(play);
+    /* несколько карт одного номинала выкладываются одним движением */
+    const same = sameRank(handIndex);
+    if (same.length>1){
+      const all=document.createElement('button');
+      all.className='btn1 alt';
+      all.textContent='Выложить все — '+same.length+' шт.';
+      all.onclick=()=>{ send({ t:'attack', is:same }); zoomEl.removeAttribute('open'); };
+      b.appendChild(all);
+    }
   }
   const close=document.createElement('button');
   close.className='btn2'; close.textContent='Закрыть';
@@ -1003,14 +1065,19 @@ function flyGesture(m){
   const rd=getComputedStyle(b).getPropertyValue('--rd').trim();
   const br=b.getBoundingClientRect(), ar=app.getBoundingClientRect();
   const x=br.left-ar.left+br.width/2, y=br.top-ar.top-6;
-  for(let i=0;i<8;i++){
+  /* цель — середина игрового поля: значки долетают до стола и растворяются там */
+  const fr=felt.getBoundingClientRect();
+  const aim=(fr.top-ar.top)+fr.height*0.42;
+  const dy=Math.min(aim-y,-140);                 /* всегда вверх, не меньше 140 px */
+  for(let i=0;i<10;i++){
     const f=document.createElement('div'); f.className='float';
-    f.style.left=(x+(Math.random()*54-27))+'px'; f.style.top=y+'px';
-    f.style.setProperty('--dx',(Math.random()*120-60).toFixed(0)+'px');
-    f.style.setProperty('--rot',(Math.random()*70-35).toFixed(0)+'deg');
-    f.style.animationDelay=(i*70)+'ms';
+    f.style.left=(x+(Math.random()*70-35))+'px'; f.style.top=y+'px';
+    f.style.setProperty('--dx',(Math.random()*220-110).toFixed(0)+'px');
+    f.style.setProperty('--dy',(dy*(0.75+Math.random()*0.4)).toFixed(0)+'px');
+    f.style.setProperty('--rot',(Math.random()*90-45).toFixed(0)+'deg');
+    f.style.animationDelay=(i*80)+'ms';
     f.innerHTML=ic; f.querySelector('svg').style.fill=rd;
-    app.appendChild(f); setTimeout(()=>f.remove(),2100+i*70);
+    app.appendChild(f); setTimeout(()=>f.remove(),2700+i*80);
   }
   const t=seatEls[m.to]; if(!t) return;
   const r=t.getBoundingClientRect(), f2=felt.getBoundingClientRect();
