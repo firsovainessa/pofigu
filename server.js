@@ -10,7 +10,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { WebSocketServer } = require('ws');
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 3000;   /* App Platform сама задаёт порт; 3000 — запасной */
 const ROOT = __dirname;
 /* секрет ведущего: генерируется один раз и лежит рядом в файле */
 const KEYFILE = path.join(ROOT, 'host.key');
@@ -242,7 +242,7 @@ wss.on('connection', (sock, req) => {
   sendTo(sock, null, isHost);
 });
 
-srv.listen(PORT, () => {
+srv.listen(PORT, '0.0.0.0', () => {
   console.log('ПОФИГУ слушает порт '+PORT);
   console.log('Ссылка игроков:  http://<адрес>/');
   console.log('Ссылка ведущего: http://<адрес>/v/'+HOST_KEY);
