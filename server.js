@@ -23,17 +23,17 @@ if (!HOST_KEY) HOST_KEY = crypto.randomBytes(4).toString('hex');
 try { fs.writeFileSync(KEYFILE, HOST_KEY); } catch (e) { /* только чтение — работаем из памяти */ }
 
 /* ─────────── колода ─────────── */
-const SUITS = { stress:'СТРЕСС', conf:'КОНФЛИКТ', time:'ТАЙМХАОС', res:'РЕСУРСЫ', abs:'НЕЛЕПЫЕ' };
+const SUITS = { stress:'СТРЕСС', conf:'КОНФЛИКТ', time:'ТАЙМХАОС', res:'РЕСУРС', abs:'НЕЛЕПЫЕ СИТУАЦИИ' };
 const SK = Object.keys(SUITS);
 const RANKS = ['6','7','8','9','10','В','Д','К','Т'];
 const IDS = {
-  stress:['1rmVhrmBb9tQmif18WxqRqsZcx89hfl7g','1-qjcdH3F4iDVOOdwu0MeuPjfwiwrUcee','1rOq5iE1_hCATgxn10coHtllZDO_HyxQG','1Tl9T0PysyEsNGS0ZITnEidc60ncB9rCk','1SpN86cyP_uZGaOMV2h5OVrF6PsNDnAh7','1dRGSMKOxOVwnNJeV05z6fFo2V9_O0cAO','1MWgsjCRDOlKWPs5XTa1jjg5wDvCCmsue','1GpApOQ7xteZJG6f_YUBeECVmpYc8ClpV','1-z8W8iUrmUyDKMUEK-S_4dchFjurFXM4'],
-  conf:  ['1-rSji9Rn0PQF5bYAU7RdIv9F_lLefBrS','1lU9v2KTzp4JtXFy3k64e7sOFll_FLG3K','1txBBrnYNF9qbTefG0RBirXRdHKG9F-c3','1klS7vPldPJ5AQu0irYqAxYu5oGKoahrb','1VqDKY-A467kXU3QONwicRVSA-g82QfAo','1Crkp1Aws3mnsNa9UtKIDBnCgrYC4HWDj','1ChMQJh8cmyu15l-aL6WZaTQOnfEtpMMB','1Gguvq75PD5SF1dmdGHB_Dt6eTm54Jor-','1OP8438jL1vNil7V7CJqHjQ_tiX2ChV9D'],
-  time:  ['1IYk3t5-SSzBgA6V_KgksvadKiY8ibjQx','1cNTZWb8LQHloo_-JteBm_pfO6hdLV18V','1NChP3x531H4PqIU53cgVAaj8SEKTHwtS','1su-bHRQ7KCYoCDDVX9uwzt1bSKJqYdSp','10IVP3I6o1Wsj9Ozy9jIPqc4hoywO0Mvy','1uESCSZtHrk_h22qHTPBKQikTJSe0NVYM','1PnOHfCYvGjEQF9VpxTeiM2eXN_VXQ_og','1Bl3EVyrOBptLABl-Xyw_lmIIOeawQZs4','19KvyfIeGmo2kbDFhRk1ePm8koVSwUb4o'],
-  res:   ['1Ol8vAx7LoQoyqzgNWIOtEtG_DtecP3an','1ZxQ3D94dcwqcIFngRWVUN7r6YeD74q4R','1cl3QAk281xJ_teMiT-24GqzbLhvihEKt','13MU9dmJSJi3DEVrVCCiBDGGnuDyFQdyf','1nrDvi0z24cIL9QfzeZv7MDYmTmVPwC5I','1vGxha4K-9y2gk0ol_TvuK5ohfRjxDbU7','16O4mh7gyIIBktVm1V85Mw_NE154H6d7o','1pxYRBvQ8fYgH6HtrGZRwpI1l4letbNcG','1ih5pZjItyIYwGfNBPoqGuR4Cmf1iRoz0'],
-  abs:   ['1wI0GBJzxNYFb7YVpMmCs7pCVqT387Y1N','10Mah8nwaxx30OxWYkzBoyThrTddJWPk9','1Ek5f3rsmd5YgmHlW0A7S57tVlmIcikFU','1pATYQ70GcFHU0HWmHi7Pw40Z8p6nmZXg','14bMo8JQfGBuLWOC4sMyy_rg9Qveu6Nyf','1BzqWkiRKohExOnUE5oGpOYkjKbyoXeGx','1uzNE5osrDoA4bAuHZROU-GhN1gMqLbJd','1TkxKEK19g2aphiajznd5gCTRmMSzwH8q','1TvolJGnviXqg_G72-kxTxk5RUenYUoQA']
+  stress: ['stress-6','stress-7','stress-8','stress-9','stress-10','stress-v','stress-d','stress-k','stress-t'],
+  conf:  ['conf-6','conf-7','conf-8','conf-9','conf-10','conf-v','conf-d','conf-k','conf-t'],
+  time:  ['time-6','time-7','time-8','time-9','time-10','time-v','time-d','time-k','time-t'],
+  res:   ['res-6','res-7','res-8','res-9','res-10','res-v','res-d','res-k','res-t'],
+  abs:   ['abs-6','abs-7','abs-8','abs-9','abs-10','abs-v','abs-d','abs-k','abs-t']
 };
-const JOKERS = ['1oenLn8u3vJiyJg84BPEqIEwJXRZLpCph','1fCUKvYC7Px1HV-sN0ApfvBCREWeHW4Jf','1hr1G4cAGyT76vYf9on7uw7dlLK1QWZEC','1BMEUTyf8mDVTwsOa7w-uiHmec8UrK86H'];
+const JOKERS = ['joker-pofig','joker-nubyvaet','joker-uehat','joker-uvolitsya'];
 const isProblem = r => ['6','7','8','9','10'].includes(r);
 const label = c => c.joker ? 'ПОФИГ' : SUITS[c.s] + ' ' + c.r;
 
@@ -52,10 +52,47 @@ const R = {
   deck:[], trumpCard:null, trump:'time',
   table:[], discard:0, attacker:0, defender:1,
   out:Array(SEATS).fill(true), started:false, over:false,
-  frozen:false, reveal:false, log:[], gestures:{}, word:null
+  frozen:false, reveal:false, log:[], gestures:{}, word:null,
+  /* часы: начало текущего подхода и начало партии */
+  tStart:0, gStart:0
 };
 const say = t => { R.log.push({ t:new Date().toTimeString().slice(0,5), x:t });
                    if (R.log.length>200) R.log.shift(); };
+
+/* ─── шаг назад ───
+   Живой стол прощает ошибку: положил не ту карту — забрал обратно.
+   Онлайн так не умеет, поэтому перед каждым необратимым действием
+   состояние комнаты откладывается в стопку. Ведущий может вернуться
+   на двадцать шагов — этого хватает на любую «ой, не туда нажал». */
+const UNDO = [];
+function snap(what){
+  UNDO.push({ what,
+    hands: R.players.map(p => p ? { name:p.name, hand:p.hand.slice() } : null),
+    deck: R.deck.slice(),
+    table: R.table.map(x => ({ a:x.a, d:x.d, by:x.by, word:x.word, wordBy:x.wordBy })),
+    discard: R.discard, attacker: R.attacker, defender: R.defender,
+    out: R.out.slice(), started: R.started, over: R.over,
+    trump: R.trump, trumpCard: R.trumpCard,
+    tStart: R.tStart, gStart: R.gStart,
+    word: R.word ? Object.assign({}, R.word) : null,
+    log: R.log.slice() });
+  if (UNDO.length > 20) UNDO.shift();
+}
+function stepBack(){
+  const s = UNDO.pop();
+  if (!s) return say('Шагов назад больше нет');
+  /* руки возвращаем по местам, соединения не трогаем */
+  s.hands.forEach((h,i) => { if (h && R.players[i]) R.players[i].hand = h.hand.slice(); });
+  R.deck = s.deck.slice();
+  R.table = s.table.map(x => Object.assign({}, x));
+  R.discard = s.discard; R.attacker = s.attacker; R.defender = s.defender;
+  R.out = s.out.slice(); R.started = s.started; R.over = s.over;
+  R.trump = s.trump; R.trumpCard = s.trumpCard;
+  R.tStart = s.tStart; R.gStart = s.gStart;
+  R.word = s.word ? Object.assign({}, s.word) : null;
+  R.log = s.log.slice();
+  say('Ведущий вернул ход назад — отменено: ' + s.what);
+}
 const alive = () => R.players.map((p,i)=>p && !R.out[i] ? i : -1).filter(i=>i>=0);
 const nextAlive = p => { for (let k=1;k<=SEATS;k++){ const i=(p+k)%SEATS;
                           if (R.players[i] && !R.out[i]) return i; } return p; };
@@ -67,6 +104,7 @@ function startGame(){
   R.trumpCard = R.deck[R.deck.length-1];
   R.trump = R.trumpCard.joker ? SK[(Math.random()*5)|0] : R.trumpCard.s;
   R.table=[]; R.discard=0; R.over=false; R.started=true; R.gestures={}; R.word=null;
+  R.gStart = R.tStart = Date.now();
   R.out = R.players.map(p => !p);
   seated.forEach(i => R.players[i].hand = []);
   for (let k=0;k<6;k++) seated.forEach(i => R.players[i].hand.push(R.deck.shift()));
@@ -156,7 +194,9 @@ function act(seat, m){
     if (room <= 0) return;
     const play = idx.slice(0, room).map(i => ({ i, c: me.hand[i] }));
     const first = R.table.length===0;
+    snap(first ? 'ход' : 'подкидывание');
     play.map(x=>x.i).sort((a,b)=>b-a).forEach(i => me.hand.splice(i,1));
+    if (first) R.tStart = Date.now();          /* пошёл новый подход */
     play.forEach(x => R.table.push({ a:x.c, d:null, by:seat }));
     say((first?'Ходит ':'Подкинул ')+me.name+': '
         + play.map(x=>label(x.c)).join(', '));
@@ -165,30 +205,34 @@ function act(seat, m){
     if (seat!==R.defender) return;
     const c = me.hand[m.i]; if (!c || !canDefend(c)) return;
     const slot = unbeaten()[0];
+    snap('карта в защите');
     me.hand.splice(m.i,1); slot.d = c;
     say(me.name+' отбил '+label(slot.a)+' → '+label(c));
   }
   if (m.t==='take' && R.started && !R.over){
     if (seat!==R.defender || !unbeaten().length) return;
+    snap('«беру»');
     const takes = R.table.filter(p => !p.d && !p.word);
     const closed = R.table.filter(p => p.d || p.word);
     takes.forEach(p => me.hand.push(p.a));
     R.discard += closed.reduce((n,p)=>n+(p.d?2:1),0);
     say(me.name+' забирает '+takes.length+' ситуац.'
         + (closed.length ? ' (закрытые уходят в отбой)' : ''));
-    R.table=[]; endTurn(nextAlive(seat));
+    R.table=[]; R.tStart = Date.now(); endTurn(nextAlive(seat));
   }
   /* защищающийся не бьёт картой, а рассказывает своё решение */
   if (m.t==='word' && R.started && !R.over){
     if (seat!==R.defender || !unbeaten().length || R.word) return;
+    snap('заявку «свой пример»');
     R.word = { by:seat, card: label(unbeaten()[0].a) };
     say(me.name+' приводит свой пример на «'+R.word.card+'» — слово ведущему');
   }
   if (m.t==='beat' && R.started && !R.over){
     if (seat===R.defender || !R.table.length || unbeaten().length) return;
+    snap('«бито»');
     R.discard += R.table.reduce((n,p)=>n+(p.d?2:1),0);
     say('Отбой: '+R.table.length+' закрыто');
-    const d=R.defender; R.table=[]; endTurn(d);
+    const d=R.defender; R.table=[]; R.tStart = Date.now(); endTurn(d);
   }
   if (m.t==='gesture'){
     const g=String(m.g||'').slice(0,20);
@@ -199,11 +243,48 @@ function act(seat, m){
   }
 }
 function hostAct(m){
-  if (m.t==='new')     { startGame(); }
+  if (m.t==='new')     { if (R.started) snap('раздачу новой партии'); startGame(); }
+  if (m.t==='undo')    { stepBack(); }
+  /* Новый стол: следующая группа садится на чистые места.
+     Прежние участники отключаются, партия и журнал обнуляются. */
+  if (m.t==='reset'){
+    /* Сначала говорим игрокам, что стол новый: иначе их вкладки переподключатся
+       и молча сядут обратно под теми же именами. */
+    clients.forEach(c => { if (!c.host && c.sock.readyState===1)
+      try { c.sock.send(JSON.stringify({ type:'reset' })); } catch(e){} });
+    R.players.forEach(p => { if (p && p.sock) try { p.sock.close(); } catch(e){} });
+    R.players = Array.from({length:SEATS}, () => null);
+    clients.forEach(c => { if (!c.host) c.seat = null; });
+    R.deck=[]; R.trumpCard=null; R.trump='time';
+    R.table=[]; R.discard=0; R.attacker=0; R.defender=1;
+    R.out = Array(SEATS).fill(true);
+    R.started=false; R.over=false; R.frozen=false; R.reveal=false;
+    R.tStart=0; R.gStart=0;
+    R.gestures={}; R.word=null;
+    R.log.length = 0;
+    UNDO.length = 0;                 /* чужие ходы новой команде не отменять */
+    say('Новый стол — места свободны, ждём новую команду');
+  }
   if (m.t==='freeze')  { R.frozen=!R.frozen; say(R.frozen?'Стоп-кадр — разбираем ситуацию':'Стоп-кадр снят, играем дальше'); }
-  if (m.t==='reveal')  { R.reveal=!R.reveal; say(R.reveal?'Ведущий открыл руки':'Руки снова закрыты'); }
+  /* Ведущий останавливает партию по времени — это штатный ход методички,
+     а заодно выход из редкой ситуации, когда крыть не может уже никто. */
+  if (m.t==='stopgame'){
+    if (!R.started || R.over) return;
+    snap('остановку партии');
+    R.over = true; R.word = null;
+    const left = alive().filter(i => R.players[i].hand.length);
+    say(left.length
+      ? 'Ведущий остановил партию. Открытые вопросы остались у: '
+        + left.map(i => R.players[i].name).join(', ')
+      : 'Ведущий остановил партию. Открытых вопросов не осталось');
+  }
+  /* Ведущий смотрит расклад — видит только он. Строку в журнале оставляем:
+     участники должны знать, что такая возможность у ведущего есть. */
+  if (m.t==='reveal')  { R.reveal=!R.reveal;
+    say(R.reveal ? 'Ведущий смотрит расклад стола' : 'Ведущий закрыл расклад'); }
   if (m.t==='wordyes'){                    /* ведущий засчитал устный ответ */
     if (!R.word) return;
+    snap('«пример засчитан»');
     const slot = unbeaten()[0];
     if (slot){ slot.word = true; slot.wordBy = R.word.by; }
     say('Ведущий засчитал пример: «'+R.word.card+'» закрыта');
@@ -211,15 +292,17 @@ function hostAct(m){
   }
   if (m.t==='wordno'){                     /* не засчитал */
     if (!R.word) return;
+    snap('«пример не засчитан»');
     say('Ведущий не засчитал пример — нужно закрыть картой или забрать');
     R.word = null;
   }
   if (m.t==='beat'){                       /* ведущий закрывает подход */
     if (!R.started || R.over || !R.table.length) return;
     if (unbeaten().length) return say('Сначала нужно отбиться или забрать');
+    snap('«всё в отбой»');
     R.discard += R.table.reduce((n,p)=>n+(p.d?2:1),0);
     say('Ведущий закрыл подход: ' + R.table.length + ' в отбой');
-    const d=R.defender; R.table=[]; endTurn(d);
+    const d=R.defender; R.table=[]; R.tStart = Date.now(); endTurn(d);
   }
   if (m.t==='kick' && R.players[m.i]) {
     say(R.players[m.i].name+' удалён со стола');
@@ -231,11 +314,13 @@ function hostAct(m){
 /* ─────────── что видит каждый ─────────── */
 function publicState(){
   return {
+    /* Чужие карты в общее состояние не попадают НИКОГДА — ни при каком
+       положении переключателей. Расклад видит только ведущий, и подмешивается
+       он персонально в sendTo(), в сообщение для его сокета. */
     seats: R.players.map((p,i)=> p ? {
       name:p.name, cards:p.hand.length,
       probl:p.hand.filter(c=>!c.joker && isProblem(c.r)).length,
-      out:R.out[i], on:!!p.sock,
-      peek: R.reveal ? p.hand.map(c=>({ s:c.s, r:c.r })) : null
+      out:R.out[i], on:!!p.sock, peek:null
     } : null),
     deck:R.deck.length, discard:R.discard, trump:R.trump,
     trumpCard:R.started ? { id:R.trumpCard.id } : null,
@@ -245,6 +330,10 @@ function publicState(){
     word: R.word ? { by:R.word.by, card:R.word.card } : null,
     attacker:R.attacker, defender:R.defender,
     started:R.started, over:R.over, frozen:R.frozen, reveal:R.reveal,
+    /* секунды считает сервер — у всех за столом одно и то же время */
+    turnSec: R.started && R.tStart ? Math.floor((Date.now()-R.tStart)/1000) : 0,
+    gameSec: R.started && R.gStart ? Math.floor((Date.now()-R.gStart)/1000) : 0,
+    running: R.started && !R.over && !R.frozen,
     log:R.log.slice(-60), gestures:R.gestures, hostKey:null
   };
 }
@@ -253,6 +342,12 @@ function sendTo(sock, seat, isHost){
   const st = publicState();
   st.me = seat;
   st.host = isHost;
+  /* Расклад стола — только в сообщение ведущего. Участнику эти данные
+     не отправляются, поэтому их нельзя достать ни из кода страницы, ни из
+     консоли: в его браузере их просто нет. */
+  if (isHost && R.reveal)
+    st.seats.forEach((s,i) => { if (s && R.players[i])
+      s.peek = R.players[i].hand.map(c => ({ s:c.s, r:c.r })); });
   st.hand = seat!=null && R.players[seat] ? R.players[seat].hand.map(c=>({
     s:c.s, r:c.r, id:c.id, joker:!!c.joker,
     can: R.started && !R.over && !R.frozen &&
@@ -269,11 +364,32 @@ function pushAll(){ clients.forEach(c => sendTo(c.sock, c.seat, c.host)); }
 const page = () => fs.readFileSync(path.join(ROOT,'index.html'));
 const srv = http.createServer((req,res)=>{
   const u = req.url.split('?')[0];
-  if (u==='/' || u.startsWith('/v/')){
+  /* Картинки карт: /cards/<имя>.jpg из папки рядом с приложением.
+     Имя жёстко фильтруется — наружу отдаётся только то, что лежит в cards/. */
+  if (u.startsWith('/cards/')){
+    const name = u.slice(7);
+    if (!/^[a-z0-9\-]+\.jpg$/.test(name)){ res.writeHead(404); return res.end('нет'); }
+    try {
+      const buf = fs.readFileSync(path.join(ROOT,'cards',name));
+      res.writeHead(200,{ 'Content-Type':'image/jpeg',
+                          'Cache-Control':'public, max-age=604800' });
+      return res.end(buf);
+    } catch(e){ res.writeHead(404); return res.end('нет такой карты'); }
+  }
+
+  /* Страница — только сам корень и ссылка ведущего целиком.
+     Раньше здесь стоял startsWith('/v/'), и запрос /v/cards/back.jpg
+     получал в ответ HTML с кодом 200: у ведущего вместо карт была
+     штриховка, а тест по кодам ответа этого не видел. */
+  if (u==='/' || /^\/v\/[^/]+\/?$/.test(u)){
     res.writeHead(200,{ 'Content-Type':'text/html; charset=utf-8' });
     return res.end(page());
   }
-  if (u==='/kluch'){                       /* ссылка ведущего — показать себе */
+  /* Служебная страница со ссылкой ведущего. Нужна только пока ключ случайный.
+     Как только в панели задана переменная HOST_KEY — ссылка постоянная,
+     и страница закрывается сама: посторонний уже не подсмотрит ключ. */
+  if (u==='/kluch'){
+    if (process.env.HOST_KEY){ res.writeHead(404); return res.end('нет такой страницы'); }
     res.writeHead(200,{ 'Content-Type':'text/plain; charset=utf-8' });
     return res.end('Ссылка ведущего: /v/'+HOST_KEY+'\n');
   }

@@ -54,11 +54,6 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 /* «выложить все одного номинала» — та же кнопка, но бронзовая, чтобы не спутать */
 .btn1.alt{background-color:#9A7C46}
 .btn1.alt:hover{background:#836739}
-.btn2.wide{display:block;width:100%;text-align:left;padding:9px 12px;font-size:1.3rem;
-  line-height:1.8rem;border-radius:8px;margin-bottom:5px}
-.btn2.tiny{padding:6px 4px;font-size:1.05rem;line-height:1.3rem;border-radius:7px;
-  text-align:center;font-family:var(--disp);letter-spacing:.6px}
-.btn2.tiny[aria-pressed="true"]{background:var(--bronze);color:#FFF8E8}
 .btng{background:transparent;color:var(--gold);border:1px solid var(--gold);
   padding:7px 13px;font-size:1.3rem;line-height:1.8rem;border-radius:8px;transition:all .2s}
 .btng:hover{background:var(--gold);color:var(--deep)}
@@ -159,17 +154,35 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
   border-radius:10px;padding:1px 9px;letter-spacing:.5px}
 /* КОЗЫРЬ помечен ЗОЛОТОМ — золото говорит «козырь», цвет говорит «масть». Не спорят. */
 .zone.trump .slot.filled{box-shadow:0 0 0 3px var(--gold),0 8px 22px -8px rgba(154,124,70,.8)}
-.trumpname{display:flex;align-items:center;gap:5px;font-family:var(--disp);font-size:1.05rem;
-  letter-spacing:1.4px;color:var(--bronze)}
-.trumpname i{width:8px;height:8px;border-radius:50%;background:var(--tsuit,#fff);display:block;
-  outline:1px solid rgba(0,0,0,.15)}
+/* Масть козыря — не точкой рядом со словом, а словом НА цвете масти:
+   цвет и название становятся одним предметом, и сопоставлять нечего. */
+.trumpname{display:block;font-family:var(--disp);font-size:1.02rem;letter-spacing:1.2px;
+  max-width:96px;text-align:center;line-height:1.15;padding:3px 7px;border-radius:6px;
+  background:var(--tsuit,transparent);color:var(--tink,var(--bronze));
+  box-shadow:0 1px 3px rgba(70,50,25,.25)}
+.trumpname.off{background:none;box-shadow:none;color:var(--ink-dim)}
+
+/* Часы подхода: главная цифра на столе после самих карт. */
+.clockzone{justify-content:flex-start}
+.clock{font-family:var(--disp);font-size:3.4rem;line-height:1;font-weight:600;
+  letter-spacing:1px;color:var(--navy);font-variant-numeric:tabular-nums;
+  padding:6px 12px 7px;border-radius:10px;background:rgba(255,255,255,.5);
+  border:1px solid var(--line);min-width:96px;text-align:center;
+  transition:color .5s ease,background .5s ease,border-color .5s ease}
+.clock.warm{color:#A87516;background:rgba(240,180,69,.18);border-color:#E2C07A}
+.clock.long{color:#BE5B2F;background:rgba(233,130,88,.2);border-color:#E9A585}
+.clock.paused{opacity:.45}
+.clocksub{font-family:var(--disp);font-size:1rem;letter-spacing:1.2px;color:var(--ink-dim)}
+.clocksub b{font-weight:600;font-variant-numeric:tabular-nums}
 
 .battle{width:588px;min-height:118px;border-radius:14px;border:1px solid var(--line);
   background:rgba(255,255,255,.34);padding:10px 14px 12px}
 .battle .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;gap:10px}
 /* плашка подхода: чем пошли + какие масти подкинули */
 .podhod{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-size:1.05rem;
-  letter-spacing:1.8px;color:var(--ink-dim)}
+  letter-spacing:1.8px;color:var(--ink-dim);flex-wrap:wrap;min-width:0}
+/* «НЕЛЕПЫЕ СИТУАЦИИ» — самое длинное название масти; ужимаем разрядку, а не режем текст */
+.podhod b{white-space:nowrap}
 .podhod b{color:var(--liveInk);font-weight:600;letter-spacing:1.6px}
 .dots{display:flex;gap:4px}
 .dots i{width:9px;height:9px;border-radius:2px;display:block;outline:1px solid rgba(0,0,0,.15)}
@@ -193,35 +206,97 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 
 /* ─────── панели ─────── */
 .panel{position:absolute;z-index:36;background:var(--panel);border:1px solid var(--line);
-  border-radius:12px;padding:10px 11px 11px;box-shadow:0 6px 18px -9px rgba(90,70,40,.6)}
-.host{left:14px;bottom:14px;width:190px}
-.cheat{right:14px;bottom:14px;width:206px}
-.panel h4{margin:0 0 8px;font-family:var(--disp);font-size:1.05rem;letter-spacing:2px;font-weight:500}
+  border-radius:12px;padding:9px 11px 10px;box-shadow:0 6px 18px -9px rgba(90,70,40,.6)}
+.host{left:14px;bottom:14px;width:232px}
+.cheat{right:14px;bottom:14px;width:232px}
+.panel h4{margin:0 0 6px;font-family:var(--disp);font-size:1.2rem;letter-spacing:2.2px;
+  font-weight:600;text-transform:uppercase}
 .host h4{color:var(--bronze)}
 .cheat h4{color:var(--ink-dim)}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:1px}
-.trumppick{margin-top:9px;border-top:1px solid #E7DECD;padding-top:8px}
-.trumppick span{font-family:var(--disp);font-size:.95rem;letter-spacing:1.6px;color:var(--bronze)}
-.weather{display:flex;gap:5px;margin-top:5px}
-.weather i{width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.14);
-  display:block;opacity:.35;transition:all .25s}
-.weather i.on{opacity:1;outline:2px solid var(--bronze);outline-offset:1px}
-.cheat ul{margin:0;padding:0;list-style:none;font-size:1.2rem;line-height:1.45}
-.cheat li{display:flex;gap:8px;margin-bottom:5px;color:var(--ink)}
-.cheat li:last-child{margin-bottom:0}
-.cheat .k{font-family:var(--disp);font-size:1.05rem;letter-spacing:.6px;color:#FFF;
-  background:var(--navy);border-radius:4px;padding:1px 6px;height:17px;flex:none}
-.cheat .k.g{background:var(--bronze)}
-.cheat .k.c{background:var(--coral-dark)}
+
+/* Подписи групп — тот же приём, что у «Козыря кона»: тонкая линия и бронза.
+   Они и держат панель: восемь кнопок подряд читаются как список, а три
+   группы по две-три — как инструмент. */
+.glabel{margin:8px 0 4px;font-family:var(--disp);font-size:.92rem;letter-spacing:1.5px;
+  color:#BCA67F;text-transform:uppercase;display:flex;align-items:center;gap:7px}
+.glabel::after{content:"";flex:1;height:1px;background:#E7DECD}
+.panel .glabel:first-of-type{margin-top:0}
+
+/* Одна кнопка на всю панель: один шрифт, один кегль, одна высота.
+   Отличаются только состоянием, а не видом. */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.hb{grid-column:span 1;height:28px;padding:0 8px;
+  font-family:var(--disp);font-size:1.25rem;letter-spacing:.5px;line-height:1;
+  background:#47627F;color:#E8F2FF;border:0;border-radius:8px;cursor:pointer;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:background .18s,color .18s}
+.hb.span2{grid-column:span 2}
+.hb:hover{background:#8FADCC;color:#2E4360}
+.hb[aria-pressed="true"]{background:var(--bronze);color:#FFF8E8}
+.hb[aria-pressed="true"]:hover{background:#836739;color:#FFF8E8}
+/* «Новый стол» высаживает группу — держим его отдельно от остальных
+   и красим в тревожный только на подтверждении */
+.hb.danger{background:transparent;color:var(--ink-dim);box-shadow:inset 0 0 0 1px #D8CBB2}
+.hb.danger:hover{background:#EFE7D8;color:var(--ink)}
+.hb.armed,.hb.armed:hover{background:#A81414;color:#FFF4E8;box-shadow:none}
+
+.trumppick{margin-top:9px;border-top:1px solid #E7DECD;padding-top:7px}
+.trumppick span{font-family:var(--disp);font-size:.95rem;letter-spacing:1.6px;
+  color:var(--bronze);text-transform:uppercase}
+/* Пять квадратиков без подписей ведущему ничего не говорили: цвет надо было
+   держать в голове. Теперь это список «цвет + название», и козырь в нём помечен. */
+/* Пять квадратиков без подписей ничего не говорили: цвет надо было держать
+   в голове. Теперь это «цвет + название» — и стоит на общей памятке,
+   потому что сопоставлять цвет с мастью приходится не только ведущему. */
+.suitkey{list-style:none;margin:0;padding:0;display:grid;
+  grid-template-columns:1fr 1fr;gap:2px 6px}
+.suitkey li{display:flex;align-items:center;gap:6px;padding:2px 4px;border-radius:5px;
+  font-family:var(--disp);font-size:1.02rem;letter-spacing:.4px;color:var(--ink);
+  white-space:nowrap;transition:background .25s,color .25s}
+.suitkey li.wide{grid-column:span 2}
+.suitkey i{width:13px;height:13px;border-radius:4px;flex:none;
+  border:1px solid rgba(0,0,0,.16)}
+.suitkey li.on{background:#F4ECDC;font-weight:600;color:var(--deep)}
+.suitkey li.on::after{content:"козырь";margin-left:auto;font-size:.84rem;
+  letter-spacing:.8px;color:var(--bronze);padding-left:6px}
+
+/* Козырь в панели ведущего — одна широкая плашка цвета масти со словом внутри */
+.trumpchip{margin-top:5px;padding:5px 8px;border-radius:7px;text-align:center;
+  font-family:var(--disp);font-size:1.18rem;letter-spacing:1px;
+  background:var(--tsuit,#EDE4D4);color:var(--tink,var(--ink-dim));
+  box-shadow:0 1px 3px rgba(70,50,25,.22)}
+.trumpchip.off{background:#EFE7D8;color:var(--ink-dim);box-shadow:none;
+  font-size:1.02rem;letter-spacing:.6px}
+/* Правило — одна строка. Плашки одной ширины, поэтому текст начинается
+   по одной оси: глаз читает колонку, а не лесенку. */
+.rules{margin:0;padding:0;list-style:none;font-size:1.2rem;line-height:1.3;white-space:nowrap}
+.rules li{display:grid;grid-template-columns:62px 1fr;gap:7px;align-items:baseline;
+  margin-bottom:6px;color:var(--ink)}
+.rules li:last-child{margin-bottom:0}
+.rules .k{font-family:var(--disp);font-size:1.02rem;letter-spacing:.5px;color:#FFF;
+  background:var(--navy);border-radius:4px;padding:2px 0;text-align:center;
+  line-height:1.15;align-self:start;margin-top:1px}
+.rules .k.g{background:var(--bronze)}
+.rules .k.c{background:var(--coral-dark)}
+.glabel.no{color:#A81414;margin:13px 0 6px}
+.glabel.no::after{background:#EBD3CE}
+.rules.no{color:#8A6A62}
+.rules.no li{grid-template-columns:12px 1fr;gap:6px}
+.rules.no li::before{content:"×";color:#A81414;font-family:var(--disp);
+  font-size:1.25rem;line-height:1.1}
 
 /* ─────── рука: борт стола, чуть темнее сукна ─────── */
-.handzone{background:linear-gradient(180deg,#C2AB86,var(--rail));
-  border-top:2px solid var(--gold);padding:0 18px 12px;
+.handzone{background:linear-gradient(180deg,#C2AB86,var(--rail));min-width:0;
+  border-top:2px solid var(--gold);padding:0 18px 6px;
   box-shadow:0 -6px 18px -12px rgba(90,70,40,.6) inset}
-.handbar{position:relative;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 0 2px}
-.handbar .t{font-family:var(--disp);font-size:1.1rem;letter-spacing:2.2px;color:#4A3D28}
+/* min-width:0 обязателен: без него строка «последний ход» не сжимается,
+   распирает нижнюю панель шире стола, и у шпаргалки справа срезает край */
+.handbar{position:relative;z-index:6;display:flex;align-items:center;gap:8px;
+  padding:8px 0 2px;min-width:0}
+.handbar .t{font-family:var(--disp);font-size:1.1rem;letter-spacing:2.2px;color:#4A3D28;
+  white-space:nowrap;flex:none}
 .handbar .last{font-size:1.25rem;color:#5C4E37;margin-left:12px;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;max-width:330px}
+  overflow:hidden;text-overflow:ellipsis;max-width:330px;min-width:0;flex:0 1 auto}
 /* ── ЖЕСТЫ. Одна форма, одна ширина, один шрифт, ровно 7 букв в каждом —
       ряд читается как единый инструмент, а не как случайный набор кнопок.
       Форма капсулы отличает жест от хода: ходы прямоугольные. ── */
@@ -277,14 +352,29 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 #pofigBtn.armed{animation:armed 2.4s ease-in-out infinite}
 @keyframes armed{0%,100%{box-shadow:0 0 0 0 rgba(255,127,80,0)}
   50%{box-shadow:0 0 0 6px rgba(255,127,80,.28)}}
-.hand{display:flex;justify-content:center;align-items:flex-end;height:124px}
-.hcard{width:84px;flex:none;margin-inline:-6px;position:relative;transform-origin:bottom center;
-  cursor:pointer;transition:transform .18s cubic-bezier(.2,.7,.3,1),filter .18s}
-.hcard img{width:84px;height:120px;object-fit:cover;display:block;border-radius:6px;
-  background:var(--card);border:1px solid rgba(255,255,255,.9);
-  box-shadow:0 12px 22px -8px rgba(70,50,25,.95)}
-.hcard:hover,.hcard:focus-visible{transform:translateY(-24px) scale(1.14);z-index:5;
-  filter:drop-shadow(0 6px 12px rgba(70,50,25,.5))}
+/* ── РУКА. Карты лежат веером, как в живой руке: каждая повёрнута на свой
+      угол и опущена по дуге. Угол считается от центра руки (--t), поэтому
+      веер сам подстраивается под 1, 6 или 12 карт. ── */
+.hand{display:flex;justify-content:center;align-items:flex-end;height:192px;
+  padding:0 16px 8px;min-width:0;
+  perspective:1100px;perspective-origin:50% 120%}
+/* Ось поворота — чуть ниже нижнего края карты: так веер раскрывается вверх,
+   а низы карт остаются почти на одной линии и не вылезают за борт стола. */
+.hcard{width:110px;flex:none;position:relative;
+  transform-origin:50% 118%;transform-style:preserve-3d;cursor:pointer;
+  transform:rotate(calc(var(--t,0) * var(--ang,3.4deg)));
+  transition:transform .2s cubic-bezier(.2,.7,.3,1),filter .2s}
+/* нахлёст ставим ТОЛЬКО между картами: тогда ширина веера ровно
+   n*ширина − (n−1)*нахлёст, и flex центрирует его без перекоса */
+.hcard + .hcard{margin-left:calc(var(--ov,26px) * -1)}
+.hcard img{width:110px;height:166px;object-fit:cover;display:block;border-radius:8px;
+  background:var(--card);border:1px solid rgba(255,255,255,.92);
+  box-shadow:0 14px 26px -10px rgba(70,50,25,.95),0 2px 4px rgba(70,50,25,.35)}
+/* наведение: карта выпрямляется, поднимается и слегка наклоняется за курсором */
+.hcard:hover,.hcard:focus-visible{z-index:8;
+  transform:translateY(-26px) rotate(0deg) scale(1.07)
+            rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  filter:drop-shadow(0 14px 20px rgba(70,50,25,.55))}
 /* подсказка: этой картой сейчас можно подкинуть */
 .hcard.can img{outline:3px solid var(--bronze);outline-offset:1px}
 /* сколько ещё таких же карт в руке — их можно выложить одним движением */
@@ -293,6 +383,22 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
   color:#fff;font:700 1.2rem/22px var(--ui);text-align:center;
   box-shadow:0 2px 6px rgba(0,0,0,.35)}
 .hcard.gone{opacity:0;transform:translateY(-150px) scale(.7);pointer-events:none}
+
+/* ── РАЗДАЧА. Новая карта прилетает из колоды: сервер прислал её впервые —
+      значит, её сдали. Смещение до колоды считает JS, поэтому карта летит
+      именно оттуда, где колода лежит на столе, а не из абстрактной точки. ── */
+.hcard.deal{animation:deal .52s cubic-bezier(.18,.72,.3,1) both;
+  animation-delay:var(--d,0ms)}
+@keyframes deal{
+  0%  {opacity:0;
+       transform:translate(var(--fx,0px),var(--fy,-260px)) scale(.42)
+                 rotate(-10deg) rotateY(84deg)}
+  62% {opacity:1}
+  100%{opacity:1;transform:rotate(calc(var(--t,0) * var(--ang,3.4deg))) scale(1) rotateY(0deg)}}
+@media (prefers-reduced-motion:reduce){
+  .hcard.deal{animation-duration:.01s}
+  .hcard{transition:none}
+}
 
 /* ─────── оверлеи (absolute внутри стола — безопасно для iframe) ─────── */
 .overlay{position:absolute;inset:0;background:rgba(60,45,22,.42);display:none;
@@ -311,7 +417,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 .log b{font-family:var(--disp);color:var(--bronze);flex:none;width:38px}
 .bars{margin:0;padding:0;list-style:none}
 .bars li{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:1.3rem}
-.bars .nm{width:104px;font-family:var(--disp);letter-spacing:1.2px;flex:none}
+.bars .nm{width:126px;font-family:var(--disp);letter-spacing:.6px;font-size:1.25rem;flex:none;
+  line-height:1.25}
 .bars .tr{flex:1;height:12px;border-radius:6px;background:#EDE4D3;overflow:hidden}
 .bars .tr i{display:block;height:100%;border-radius:6px}
 .bars .v{width:22px;text-align:right;font-family:var(--disp);flex:none}
@@ -391,7 +498,6 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
          bottom:auto!important}
   .host{order:0}
   .cheat{order:3}
-  .g2{grid-template-columns:1fr 1fr}
 
   /* рука и кнопки */
   /* карты — сразу под столом, кнопки ниже */
@@ -410,8 +516,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
   #actBtn,#pofigBtn{width:100%;justify-content:center;padding:12px 10px;font-size:1.5rem}
   .hand{height:auto;justify-content:flex-start;overflow-x:auto;overflow-y:visible;
         padding:6px 0 10px;-webkit-overflow-scrolling:touch}
-  .hcard{margin-inline:-4px}
-  .hcard:hover,.hcard:focus-visible{transform:translateY(-10px) scale(1.05)}
+  .hand{height:auto;perspective:none;padding:0 0 4px}
+  .hcard{width:84px;transform:none}
+  .hcard img{width:84px;height:127px;border-radius:6px}
+  .hcard:hover,.hcard:focus-visible{transform:translateY(-14px) rotate(0deg) scale(1.06)}
 
   /* окна поверх стола — всегда по центру экрана */
   .overlay{position:fixed;z-index:100;padding:14px}
@@ -502,7 +610,13 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
         <div class="zone trump">
           <span class="zlabel">КОЗЫРЬ</span>
           <div class="slot filled"><img id="trumpImg" alt="Козырная карта"></div>
-          <span class="trumpname" id="trumpName"><i></i>ТАЙМХАОС</span>
+          <span class="trumpname" id="trumpName">ТАЙМХАОС</span>
+        </div>
+
+        <div class="zone clockzone">
+          <span class="zlabel">НА ЭТОМ ПОДХОДЕ</span>
+          <div class="clock" id="clock">0:00</div>
+          <span class="clocksub">партия <b id="gameClock">0:00</b></span>
         </div>
       </div>
 
@@ -529,29 +643,54 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 
     <aside class="panel host">
       <h4>ВЕДУЩИЙ</h4>
-      <button class="btn2 wide" data-act="new">Новая партия</button>
-      <button class="btn2 wide" data-act="peek" aria-pressed="false">Показать все руки</button>
-      <div class="g2">
-        <button class="btn2 tiny" data-act="stop" aria-pressed="false">СТОП-КАДР</button>
-        <button class="btn2 tiny" data-act="sum">ИТОГ КОНА</button>
+
+      <p class="glabel">По ходу партии</p>
+      <div class="grid2">
+        <button class="hb" data-act="stop" aria-pressed="false">Стоп-кадр</button>
+        <button class="hb" data-act="undo"
+          title="Отменяет последнее действие за столом: ход, отбой, «беру», «бито»">Шаг назад</button>
+        <button class="hb span2" data-act="beat">Всё в отбой</button>
       </div>
-      <button class="btn2 wide" data-act="beat" style="margin-top:5px">Всё в отбой</button>
-      <div class="trumppick"><span>КОЗЫРЬ КОНА</span>
-        <div class="weather" id="weather">
-          <i data-s="stress" style="background:#CA1A1A"></i><i data-s="conf" style="background:#DC936C"></i>
-          <i data-s="time" style="background:#F0B445"></i><i data-s="res" style="background:#396693"></i>
-          <i data-s="abs" style="background:#E98258"></i></div></div>
+
+      <p class="glabel">Разбор</p>
+      <div class="grid2">
+        <button class="hb" data-act="sum">Итог кона</button>
+        <button class="hb" data-act="peek" aria-pressed="false"
+          title="Расклад видите только вы — участники чужих карт не получают">Все руки</button>
+      </div>
+
+      <p class="glabel">Партия и стол</p>
+      <div class="grid2">
+        <button class="hb span2" data-act="new">Новая партия</button>
+        <button class="hb" data-act="stopgame">Завершить</button>
+        <button class="hb danger" data-act="reset" id="resetBtn">Новый стол</button>
+      </div>
+
+      <div class="trumppick"><span>Козырь кона</span>
+        <div class="trumpchip off" id="trumpChip">ещё не открыт</div></div>
     </aside>
 
     <aside class="panel cheat">
-      <h4>ЧЕМ БЬЁТСЯ ПРОБЛЕМА</h4>
-      <ul>
-        <li><span class="k">В Д К Т</span>Решением своей масти</li>
-        <li><span class="k g">КОЗЫРЬ</span>Решением козырной масти</li>
-        <li><span class="k c">ПОФИГ</span>Джокер бьёт что угодно</li>
-        <li><span class="k g">СВОЙ ПРИМЕР</span>Рассказом — если ведущий засчитал</li>
-        <li style="color:#A81414;margin-top:7px"><span class="k" style="background:#A81414">6→10</span>Проблемой крыть нельзя</li>
+      <h4>Памятка</h4>
+      <p class="glabel">Чем бьётся проблема</p>
+      <ul class="rules">
+        <li><span class="k">В Д К Т</span><span>своей масти</span></li>
+        <li><span class="k g">КОЗЫРЬ</span><span>козырной масти</span></li>
+        <li><span class="k c">ПОФИГ</span><span>джокер бьёт всё</span></li>
+        <li><span class="k g">ПРИМЕР</span><span>если засчитан</span></li>
       </ul>
+      <p class="glabel no">Нельзя</p>
+      <ul class="rules no">
+        <li><span>крыть проблему проблемой</span></li>
+        <li><span>подкидывать, пока не отбились</span></li>
+      </ul>
+      <p class="glabel">Масти</p>
+      <ul class="suitkey" id="weather">
+        <li data-s="stress"><i style="background:#CA1A1A"></i>Стресс</li>
+        <li data-s="res"><i style="background:#396693"></i>Ресурс</li>
+        <li data-s="time"><i style="background:#F0B445"></i>Таймхаос</li>
+        <li data-s="conf"><i style="background:#DC936C"></i>Конфликт</li>
+        <li data-s="abs" class="wide"><i style="background:#E98258"></i>Нелепые ситуации</li>
       </ul>
     </aside>
 
@@ -777,19 +916,24 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);ou
 <script>
 /* ═══ ПОФИГУ — клиент. Всё состояние приходит с сервера;
        здесь только отрисовка и отправка ходов. ═══ */
-const BASE = 'https://lh3.googleusercontent.com/d/';
-const U    = id => BASE + id + '=w520';
-const UBIG = id => BASE + id + '=w1200';   /* для увеличения — чтобы текст был чётким */
+/* Картинки карт лежат рядом с игрой, в папке cards/ — не на внешнем сервисе.
+   Так они не отвалятся в корпоративной сети, грузятся быстрее и обновляются
+   вместе с кодом: заменили файл — заменилась карта. */
+/* Путь абсолютный: страница ведущего живёт на /v/<ключ>, и относительный
+   'cards/' превращался бы там в /v/cards/ — не туда. */
+const BASE = '/cards/';
+const U    = id => BASE + id + '.jpg';
+const UBIG = U;                            /* один файл на обе роли: 732×1110 хватает и для увеличения */
 const safe = img => { img.onerror = () => { img.removeAttribute('src');
   img.style.background='repeating-linear-gradient(45deg,#D6C4A3 0 6px,#C2AB86 6px 12px)'; }; return img; };
-const BACK = '1kAaS7pol1qTUVutb7sbGc0eHxYQWDhrm';
+const BACK = 'back';
 
 const SUITS = {
-  stress:{n:'СТРЕСС',   c:'#CA1A1A', d:'#A81414'},
-  conf:  {n:'КОНФЛИКТ', c:'#DC936C', d:'#A96240'},
-  time:  {n:'ТАЙМХАОС', c:'#F0B445', d:'#A87516'},
-  res:   {n:'РЕСУРСЫ',  c:'#396693', d:'#2A4E70'},
-  abs:   {n:'НЕЛЕПЫЕ',  c:'#E98258', d:'#BE5B2F'}
+  stress:{n:'СТРЕСС',   c:'#CA1A1A', d:'#A81414', ink:'#FFF6EF'},
+  conf:  {n:'КОНФЛИКТ', c:'#DC936C', d:'#A96240', ink:'#3A2013'},
+  time:  {n:'ТАЙМХАОС', c:'#F0B445', d:'#A87516', ink:'#3D2B08'},
+  res:   {n:'РЕСУРС',   c:'#396693', d:'#2A4E70', ink:'#EFF6FF'},
+  abs:   {n:'НЕЛЕПЫЕ СИТУАЦИИ', c:'#E98258', d:'#BE5B2F', ink:'#3B1B0C'}
 };
 const SK = Object.keys(SUITS);
 const AV = ['#CA1A1A','#396693','#E98258','#A96240','#9AA7B4','#9A7C46'];
@@ -800,8 +944,11 @@ const felt = document.getElementById('felt'), app = document.querySelector('.app
 const seatEls = [];
 for (let i=0;i<6;i++){ const s=document.createElement('div'); s.className='seat';
   seatEls.push(s); felt.appendChild(s); }
-const POS = [{l:'8%',t:'22%'},{l:'22%',t:'6%'},{l:'50%',t:'10px'},
-             {l:'78%',t:'6%'},{l:'91%',t:'28%'},{l:'50%',b:'10px'}];
+/* Места идут дугой по верху стола, шестое — внизу по центру.
+   Боковые места раньше опускались до 22–28 % высоты и упирались в панели
+   ведущего и памятки: нижние углы сукна отданы панелям, места туда не лезут. */
+const POS = [{l:'7%',t:'1%'},{l:'23%',t:'3%'},{l:'50%',t:'4%'},
+             {l:'77%',t:'3%'},{l:'93%',t:'1%'},{l:'50%',b:'8px'}];
 seatEls.forEach((s,i)=>{ s.style.left=POS[i].l;
   if (POS[i].b) s.style.bottom=POS[i].b; else s.style.top=POS[i].t; });
 
@@ -824,6 +971,13 @@ function connect(){
     }
     if (m.type==='gesture') flyGesture(m);
     if (m.type==='full') msg('Стол заполнен — все шесть мест заняты.');
+    /* Ведущий открыл новый стол: имя забываем, иначе вкладка сядет обратно сама */
+    if (m.type==='reset'){
+      myName = '';
+      try { localStorage.removeItem('pofigu_name'); } catch(e){}
+      document.getElementById('joinbox').setAttribute('open','');
+      msg('Ведущий открыл новый стол. Впишите имя, чтобы сесть.');
+    }
   };
 }
 const send = o => { if (ws && ws.readyState===1) ws.send(JSON.stringify(o)); };
@@ -853,6 +1007,12 @@ function render(){
   document.querySelector('.host').classList.toggle('on', !!S.host);
   document.body.classList.toggle('host-on', !!S.host);
   felt.classList.toggle('frozen', !!S.frozen);
+  /* Кнопки-переключатели показывают своё состояние: раньше стиль был,
+     а обновлять его было некому. Особенно важно для «Все руки» —
+     участники расклада не видят, и ведущий должен знать, что он открыт. */
+  const tog=(act,on)=>{ const b=document.querySelector('[data-act="'+act+'"]');
+    if (b) b.setAttribute('aria-pressed', on?'true':'false'); };
+  tog('stop', S.frozen); tog('peek', S.reveal);
 
   seatEls.forEach((el,i)=>{
     const p = S.seats[i];
@@ -872,7 +1032,9 @@ function render(){
       <div class="counts"><div class="cnt"><b>${p.cards}</b><span>карт</span></div>
       <div class="cnt problem"><b>${p.probl}</b><span>проблем</span></div></div>
       <div class="tmr"><i></i></div>`;
-    if (p.peek && i!==S.me){
+    /* Расклад рисуется только у ведущего. Сервер участнику этих данных
+       и не присылает — проверка здесь на случай будущих правок. */
+    if (S.host && p.peek && i!==S.me){
       const st=document.createElement('div'); st.className='peek';
       st.innerHTML=p.peek.map(c=>`<i style="background:${c.s?SUITS[c.s].c:'#9A7C46'}"
         title="${c.s?SUITS[c.s].n+' '+c.r:'ПОФИГ'}"></i>`).join('');
@@ -890,14 +1052,29 @@ function render(){
     ti.onclick=()=>openZoom({id:S.trumpCard.id, s:S.trump, r:'', joker:false}, null); }
   else { tslot.classList.remove('filled'); ti.style.display='none'; ti.removeAttribute('src'); }
   const tn=document.getElementById('trumpName');
-  if (S.started){ tn.innerHTML='<i></i>'+SUITS[S.trump].n; tn.style.setProperty('--tsuit',SUITS[S.trump].c); }
-  else { tn.innerHTML='ещё не открыт'; }
+  if (S.started){ tn.textContent=SUITS[S.trump].n; tn.classList.remove('off');
+    tn.style.setProperty('--tsuit',SUITS[S.trump].c);
+    tn.style.setProperty('--tink',SUITS[S.trump].ink); }
+  else { tn.textContent='ещё не открыт'; tn.classList.add('off'); }
   const dz=document.getElementById('discard');
   dz.classList.toggle('filled', S.discard>0);
   dz.innerHTML = S.discard ? `<img alt="Отбой"><span class="deckcount">${S.discard}</span>` : '';
   if (S.discard) safe(dz.querySelector('img')).src=U(BACK);
-  [...document.querySelectorAll('#weather i')].forEach(el=>
-    el.classList.toggle('on', el.dataset.s===S.trump));
+  [...document.querySelectorAll('#weather li')].forEach(el=>
+    el.classList.toggle('on', S.started && el.dataset.s===S.trump));
+  const tc=document.getElementById('trumpChip');
+  if (tc){
+    if (S.started){ tc.textContent=SUITS[S.trump].n; tc.classList.remove('off');
+      tc.style.setProperty('--tsuit',SUITS[S.trump].c);
+      tc.style.setProperty('--tink',SUITS[S.trump].ink); }
+    else { tc.textContent='ещё не открыт'; tc.classList.add('off'); }
+  }
+
+  /* ── часы ── секунды считает сервер, между его сообщениями тикаем сами,
+     чтобы цифра не замирала на паузах в разговоре */
+  clk.turn = S.turnSec||0; clk.game = S.gameSec||0;
+  clk.run  = !!S.running;  clk.on = !!S.started;
+  paintClock();
 
   const first=S.table[0];
   setLive(first && !first.a.joker ? first.a.s : null);
@@ -948,12 +1125,58 @@ function sameRank(i){
   if (!c || !c.can || c.joker || S.me===S.defender || S.frozen) return [i];
   return h.map((x,j)=>({x,j})).filter(o=>o.x.can && !o.x.joker && o.x.r===c.r).map(o=>o.j);
 }
+/* какие карты были в руке в прошлый раз — всё, чего в этом списке нет,
+   пришло только что, значит его надо сдать с анимацией */
+/* ─────────── часы подхода ───────────
+   Считаем ВВЕРХ, а не вниз: методика просит не торопить разговор.
+   Цифра растёт и меняет цвет — это подсказка ведущему, а не приговор.
+   До 2 минут спокойная, до 4 бронзовая, дальше коралловая. */
+const clk = { turn:0, game:0, run:false, on:false };
+const mmss = n => Math.floor(n/60) + ':' + String(n%60).padStart(2,'0');
+function paintClock(){
+  const el=document.getElementById('clock'), g=document.getElementById('gameClock');
+  if (!el) return;
+  el.textContent = clk.on ? mmss(clk.turn) : '0:00';
+  g.textContent  = clk.on ? mmss(clk.game) : '0:00';
+  el.classList.toggle('warm', clk.on && clk.turn>=120 && clk.turn<240);
+  el.classList.toggle('long', clk.on && clk.turn>=240);
+  el.classList.toggle('paused', !clk.run);
+}
+setInterval(()=>{ if (clk.run){ clk.turn++; clk.game++; paintClock(); } }, 1000);
+
+let prevHand = new Set();
+
 function renderHand(){
   handEl.innerHTML='';
-  (S.hand||[]).forEach((c,i)=>{
+  const hand = S.hand||[];
+  const now = new Set(hand.map(c=>c.id));
+  const fresh = hand.filter(c=>!prevHand.has(c.id));
+  const center = (hand.length-1)/2;
+  let k = 0;
+  /* Веер должен помещаться в борт стола при любом числе карт: чем их больше,
+     тем сильнее нахлёст и тем меньше угол. Иначе крайние карты уезжают за экран. */
+  const mob = window.matchMedia('(max-width:760px)').matches;
+  const n = hand.length;
+  if (mob){
+    /* на телефоне рука — прокручиваемая лента, веер там только мешает */
+    handEl.style.setProperty('--ov','14px');
+    handEl.style.setProperty('--ang','0deg');
+  } else {
+    const CW = 110;
+    /* -34 — запас на то, что повёрнутая карта занимает шире собственной ширины */
+    const room = Math.max(180, handEl.clientWidth - 34);
+    const need = n>1 ? Math.max(CW*0.22, (n*CW - room)/(n-1)) : 0;
+    handEl.style.setProperty('--ov', Math.round(Math.min(need, CW*0.62))+'px');
+    handEl.style.setProperty('--ang', (n>1 ? Math.min(3.4, 22/(n-1)) : 0).toFixed(2)+'deg');
+  }
+  hand.forEach((c,i)=>{
     const d=document.createElement('div');
     d.className='hcard'+(c.can?' can':'');
     d.tabIndex=0; d.title=label(c);
+    /* место карты в веере: t — смещение от центра, t2 — насколько опустить по дуге */
+    const t = i-center;
+    d.style.setProperty('--t', t.toFixed(2));
+    d.style.setProperty('--t2', (t*t).toFixed(2));
     d.innerHTML=`<img src="${U(c.id)}" alt="${label(c)}">`;
     safe(d.querySelector('img'));
     const n = sameRank(i).length;
@@ -961,11 +1184,39 @@ function renderHand(){
               b.className='dup'; b.textContent='\u00d7'+n; d.appendChild(b); }
     const open=()=>openZoom(c, i);
     d.onclick=open; d.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} };
+    if (!prevHand.has(c.id)){ d.dataset.deal='1'; d.style.setProperty('--d',(k++*65)+'ms'); }
     handEl.appendChild(d);
   });
+  /* откуда лететь: считаем реальное смещение от колоды до места карты */
+  if (fresh.length){
+    const deck = document.getElementById('deckImg');
+    const dr = deck ? deck.getBoundingClientRect() : null;
+    handEl.querySelectorAll('.hcard[data-deal]').forEach(el=>{
+      if (dr){ const r=el.getBoundingClientRect();
+        el.style.setProperty('--fx', Math.round(dr.left+dr.width/2 - (r.left+r.width/2))+'px');
+        el.style.setProperty('--fy', Math.round(dr.top +dr.height/2- (r.top +r.height/2))+'px'); }
+      el.classList.add('deal');
+      el.addEventListener('animationend',()=>el.classList.remove('deal'),{once:true});
+    });
+  }
+  prevHand = now;
   document.getElementById('pofigBtn').classList.toggle('armed',
     (S.hand||[]).some(c=>c.joker&&c.can));
 }
+
+/* лёгкий наклон карты за курсором — карта перестаёт быть картинкой
+   и начинает вести себя как предмет в руке */
+handEl.addEventListener('pointermove', e=>{
+  const el=e.target.closest('.hcard'); if(!el) return;
+  const r=el.getBoundingClientRect();
+  const px=(e.clientX-r.left)/r.width-.5, py=(e.clientY-r.top)/r.height-.5;
+  el.style.setProperty('--ry',( px*16).toFixed(1)+'deg');
+  el.style.setProperty('--rx',(-py*12).toFixed(1)+'deg');
+});
+handEl.addEventListener('pointerleave',()=>{
+  handEl.querySelectorAll('.hcard').forEach(el=>{
+    el.style.removeProperty('--rx'); el.style.removeProperty('--ry'); });
+});
 /* ── увеличение карты ── */
 const zoomEl=document.getElementById('zoom');
 function openZoom(c, handIndex){
@@ -1037,8 +1288,27 @@ document.querySelectorAll('[data-act]').forEach(btn=>{
     if (a==='beat')    send({ h:1, t:'beat' });
     if (a==='wordyes') send({ h:1, t:'wordyes' });
     if (a==='wordno')  send({ h:1, t:'wordno' });
+    if (a==='undo')     send({ h:1, t:'undo' });
+    if (a==='stopgame') send({ h:1, t:'stopgame' });
+    if (a==='reset')   askReset(btn);
   };
 });
+
+/* «Новый стол» высаживает всю группу, поэтому спрашиваем дважды:
+   первое нажатие взводит кнопку, второе — выполняет. Через 4 секунды отменяется. */
+let resetArmed = 0;
+function askReset(btn){
+  if (Date.now() < resetArmed){
+    resetArmed = 0; btn.textContent = 'Новый стол'; btn.classList.remove('armed');
+    send({ h:1, t:'reset' });
+    return;
+  }
+  resetArmed = Date.now() + 4000;
+  btn.textContent = 'Высадить всех?';
+  btn.classList.add('armed');
+  setTimeout(()=>{ if (Date.now() >= resetArmed){
+    resetArmed = 0; btn.textContent = 'Новый стол'; btn.classList.remove('armed'); } }, 4100);
+}
 function showSum(){
   const rest={}; SK.forEach(k=>rest[k]=0); let jok=0;
   S.seats.forEach(p=>{ if(p&&p.peek) p.peek.forEach(c=>c.s?rest[c.s]++:jok++); });
